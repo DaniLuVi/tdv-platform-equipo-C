@@ -68,7 +68,7 @@ class GameView(arcade.View):
 # --- VISTA: AJUSTES ---
 class SettingsView(arcade.View):
     def on_show_view(self):
-        arcade.set_background_color(arcade.color.BATTLESHIP_GREY)
+        arcade.set_background_color(arcade.color.ORANGE_PEEL)
 
     def on_draw(self):
         self.clear()
@@ -83,11 +83,11 @@ class SettingsView(arcade.View):
                          arcade.color.WHITE, font_size=30, anchor_x="center")
 
         # Botón Menos (-)
-        arcade.draw_lrbt_rectangle_filled(cx - 120, cx - 40, cy - 20, cy + 20, arcade.color.RED_DEVIL)
+        arcade.draw_lrbt_rectangle_filled(cx - 120, cx - 40, cy - 20, cy + 20, arcade.color.BLACK_LEATHER_JACKET)
         arcade.draw_text("-", cx - 80, cy, arcade.color.WHITE, font_size=30, anchor_x="center", anchor_y="center")
 
         # Botón Más (+)
-        arcade.draw_lrbt_rectangle_filled(cx + 40, cx + 120, cy - 20, cy + 20, arcade.color.GREEN)
+        arcade.draw_lrbt_rectangle_filled(cx + 40, cx + 120, cy - 20, cy + 20, arcade.color.BLACK_LEATHER_JACKET)
         arcade.draw_text("+", cx + 80, cy, arcade.color.WHITE, font_size=30, anchor_x="center", anchor_y="center")
 
         # Botón Volver
