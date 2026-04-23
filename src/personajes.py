@@ -58,7 +58,7 @@ class Personaje(arcade.Sprite, ABC):
         self.center_y = 200
 
     def draw(self):
-        arcade.draw_rectangle_filled(
+        arcade.draw_lbwh_rectangle_filled(
             self.center_x,
             self.center_y,
             self.width,
@@ -94,7 +94,7 @@ class ZonaPeligrosa(arcade.Sprite):
         else:
             color = arcade.color.GREEN
 
-        arcade.draw_rectangle_filled(
+        arcade.draw_lbwh_rectangle_filled(
             self.center_x, self.center_y, self.width, self.height, color
         )
 
