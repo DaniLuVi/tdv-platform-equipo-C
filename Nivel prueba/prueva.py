@@ -48,13 +48,13 @@ class MyGame(arcade.Window):
             return
 
         # --- JUGADOR 1 (Flechas) ---
-        self.player_sprite = arcade.Sprite(":resources:images/animated_characters/female_adventurer/femaleAdventurer_idle.png", 0.3)
+        self.player_sprite = arcade.Sprite("chica.png", 0.1)
         self.player_sprite.center_x = 100
         self.player_sprite.center_y = 150
         self.scene.add_sprite("Player1", self.player_sprite)
 
         # --- JUGADOR 2 (WASD) ---
-        self.player_sprite2 = arcade.Sprite(":resources:images/animated_characters/male_adventurer/maleAdventurer_idle.png", 0.3)
+        self.player_sprite2 = arcade.Sprite("chico.png", 0.1)
         self.player_sprite2.center_x = 200
         self.player_sprite2.center_y = 150
         self.scene.add_sprite("Player2", self.player_sprite2)
