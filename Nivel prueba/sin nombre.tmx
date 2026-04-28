@@ -6,8 +6,8 @@
  <tileset firstgid="14" source="veneno.tsx"/>
  <tileset firstgid="15" source="lava1.tsx"/>
  <tileset firstgid="16" source="agua.tsx"/>
- <imagelayer id="7" name="Capa de Imagen 1" repeatx="1" repeaty="1">
-  <image source="../../../../Pictures/Screenshots/Captura de pantalla 2026-04-25 191530.png" width="473" height="334"/>
+ <imagelayer id="7" name="Capa de Imagen 1" offsetx="-418.411" offsety="22.8224" repeatx="1" repeaty="1">
+  <image source="Captura de pantalla 2026-04-25 191530.png" width="473" height="334"/>
  </imagelayer>
  <layer id="8" name="Capa de patrones 3" width="30" height="30">
   <data encoding="csv">
