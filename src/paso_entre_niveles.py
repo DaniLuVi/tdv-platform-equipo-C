@@ -220,10 +220,10 @@ class Mapa(arcade.View):
            1: VistaNivelEnMapa(nivel=1, x=200, y=500, conexiones=[2]),
            2: VistaNivelEnMapa(nivel=2, x=400, y=500, conexiones=[1, 3]),
            3: VistaNivelEnMapa(nivel=3, x=600, y=500, conexiones=[2, 4]),
-           4: VistaNivelEnMapa(nivel=4, x=800, y=500, conexiones=[3]),
+           4: VistaNivelEnMapa(nivel=4, x=800, y=500, conexiones=[3,5]),
            5: VistaNivelEnMapa(nivel=5, x=200, y=300, conexiones=[6, 7]),
            6: VistaNivelEnMapa(nivel=6, x=400, y=300, conexiones=[5]),
-           7: VistaNivelEnMapa(nivel=7, x=600, y=300, conexiones=[5]),
+           7: VistaNivelEnMapa(nivel=7, x=600, y=300, conexiones=[5,8]),
            8: VistaNivelEnMapa(nivel=8, x=800, y=300, conexiones=[9]),
            9: VistaNivelEnMapa(nivel=9, x=1000, y=300, conexiones=[10]),
            10: VistaNivelEnMapa(nivel=10, x=1200, y=300, conexiones=[]),
@@ -274,6 +274,15 @@ class Mapa(arcade.View):
             menu_view = MenuView()
             self.window.show_view(menu_view)
 
+# Esta va a ser la vista final que va a mostrar que se ha completado todo el juego y cerrará el programa cuando se pulse una tecla
+class Victoria_Fin_Juego(arcade.View):
+    def __init__(self):
+        super().__init__()
+        self.manager = arcade.gui.UIManager()
+    
+    #def on_show_view(self):
+
+    
 class VistaFinNivel(arcade.View):
     def __init__(self, nivel, mensaje, color):
         super().__init__()
@@ -302,7 +311,10 @@ class VistaFinNivel(arcade.View):
         # Asignar funciones a los clics
         @boton_accion.event("on_click")
         def on_click_accion(event):
-            if self.color == arcade.color.GREEN:
+            if self.nivel == 10 and self.color == arcade.color.GOLD:
+                # Si hemos ganado el nivel 10, vamos a la pantalla de créditos/final
+                self.window.show_view(Victoria_Fin_Juego())
+            elif self.color == arcade.color.GREEN:
                 # Lógica: Desbloquear siguiente y abrirlo
                 siguiente = self.nivel + 1
                 if siguiente in CLASES_NIVELES:
@@ -356,10 +368,14 @@ class NivelConseguido(VistaFinNivel):
         super().__init__(nivel, "¡Nivel conseguido!", arcade.color.GREEN)
         # Al conseguir el nivel, actualizamos su estado a conseguido
         ESTADOS_NIVELES[nivel] = "conseguido"
-        # Si el siguiente nivel está bloqueado,  lo desbloqueamos
-        siguiente = nivel + 1
-        if siguiente in ESTADOS_NIVELES and ESTADOS_NIVELES[siguiente] == "bloqueado":
-            ESTADOS_NIVELES[siguiente] = "no_conseguido"
+
+        if nivel == 10:
+            self.window.show_view(Victoria_Fin_Juego()) 
+        else:
+            # Si el siguiente nivel está bloqueado,  lo desbloqueamos
+            siguiente = nivel + 1
+            if siguiente in ESTADOS_NIVELES and ESTADOS_NIVELES[siguiente] == "bloqueado":
+                ESTADOS_NIVELES[siguiente] = "no_conseguido"
 
 # ------------------ CLASE ABSTRACTA ------------------
 class Personaje(arcade.Sprite, ABC):
