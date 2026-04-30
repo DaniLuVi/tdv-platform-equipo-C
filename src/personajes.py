@@ -94,7 +94,7 @@ class ZonaPeligrosa(arcade.Sprite):
         else:
             color = arcade.color.GREEN
 
-        arcade.draw_rectangle_filled(
+        arcade.draw_rectangle_filled()(
             self.center_x, self.center_y, self.width, self.height, color
         )
 
