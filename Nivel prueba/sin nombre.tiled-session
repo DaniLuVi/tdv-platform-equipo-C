@@ -1,0 +1,131 @@
+{
+    "activeFile": "sin nombre.tmx",
+    "expandedProjectPaths": [
+        "."
+    ],
+    "file.lastUsedOpenFilter": "Todos los archivos (*)",
+    "fileStates": {
+        "": {
+            "scaleInDock": 1
+        },
+        "#bloque": {
+            "scaleInEditor": 1
+        },
+        "C:/Users/Usuario/Desktop/WhatsApp Image 2026-04-25 at 19.06.38.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "C:/Users/Usuario/Desktop/agua.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "C:/Users/Usuario/Desktop/bloque.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "C:/Users/Usuario/Desktop/lava1.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "C:/Users/Usuario/Desktop/plataforma.tsx": {
+            "dynamicWrapping": false,
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "C:/Users/Usuario/Desktop/puerta f.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "C:/Users/Usuario/Desktop/puerta m.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "C:/Users/Usuario/Desktop/sin nombre.tmx": {
+            "scale": 0.25,
+            "selectedLayer": 1,
+            "viewCenter": {
+                "x": 824,
+                "y": 794
+            }
+        },
+        "C:/Users/Usuario/Desktop/veneno.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "WhatsApp Image 2026-04-25 at 19.06.38.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "agua.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "bloque.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "lava1.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "plataforma.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "puerta f.tsx": {
+            "scaleInDock": 1
+        },
+        "puerta m.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "sin nombre.tmx": {
+            "scale": 0.39434895833333333,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 981.3643267516344,
+                "y": 1323.7007198045303
+            }
+        },
+        "veneno.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        }
+    },
+    "last.exportedFilePath": "C:/Users/Usuario/Documents/Tec.Videojuegos/tdv-platform-equipo-C/Nivel prueba",
+    "last.externalTilesetPath": "C:/Users/Usuario/Documents/Tec.Videojuegos/tdv-platform-equipo-C/Nivel prueba",
+    "last.imagePath": "C:/Users/Usuario/Documents/Tec.Videojuegos/tdv-platform-equipo-C/Nivel prueba",
+    "map.height": 30,
+    "map.lastUsedExportFilter": "Archivos de mapas de Tiled (*.tmx *.xml)",
+    "map.lastUsedFormat": "tmx",
+    "openFiles": [
+        "bloque.tsx",
+        "WhatsApp Image 2026-04-25 at 19.06.38.tsx",
+        "sin nombre.tmx",
+        "puerta m.tsx",
+        "plataforma.tsx",
+        "agua.tsx",
+        "lava1.tsx"
+    ],
+    "project": "sin nombre.tiled-project",
+    "property.type": "object",
+    "recentFiles": [
+        "bloque.tsx",
+        "WhatsApp Image 2026-04-25 at 19.06.38.tsx",
+        "lava1.tsx",
+        "agua.tsx",
+        "plataforma.tsx",
+        "puerta m.tsx",
+        "sin nombre.tmx",
+        "veneno.tsx",
+        "C:/Users/Usuario/Desktop/WhatsApp Image 2026-04-25 at 19.06.38.tsx",
+        "C:/Users/Usuario/Desktop/sin nombre.tmx",
+        "C:/Users/Usuario/Desktop/lava1.tsx",
+        "C:/Users/Usuario/Desktop/agua.tsx"
+    ],
+    "tileset.lastUsedFormat": "tsx",
+    "tileset.tileSize": {
+        "height": 64,
+        "width": 64
+    }
+}
