@@ -3,14 +3,13 @@ import os
 
 # --- Configuración ---
 SCREEN_WIDTH = 800
-SCREEN_HEIGHT = 800
+SCREEN_HEIGHT = 700 
 SCREEN_TITLE = "Duelo de Plataformas - Misión Cooperativa"
 
 # Valores de física
 GRAVITY = 0.5
 PLAYER_JUMP_SPEED = 12
 PLAYER_MOVEMENT_SPEED = 5
-MAP_SCALING = 0.4 
 
 class MyGame(arcade.Window):
     def __init__(self):
@@ -34,12 +33,12 @@ class MyGame(arcade.Window):
 
         # Configuración de capas
         layer_options = {
-            "Capa de patrones 1": {"use_spatial_hash": True}, # Suelos/Paredes
-            "Capa de patrones 2": {"use_spatial_hash": True}, # Veneno
-            "Capa de patrones 4": {"use_spatial_hash": True}, # Lava
-            "Capa de patrones 5": {"use_spatial_hash": True}, # Agua
-            "Capa de patrones 6": {"use_spatial_hash": True}, # Puerta J1
-            "Capa de patrones 7": {"use_spatial_hash": True}, # Puerta J2
+            "Capa de patrones 1": {"use_spatial_hash": True},
+            "Capa de patrones 2": {"use_spatial_hash": True},
+            "Capa de patrones 4": {"use_spatial_hash": True},
+            "Capa de patrones 5": {"use_spatial_hash": True},
+            "Capa de patrones 6": {"use_spatial_hash": True},
+            "Capa de patrones 7": {"use_spatial_hash": True},
         }
 
         try:
@@ -58,15 +57,13 @@ class MyGame(arcade.Window):
             return
 
         # --- JUGADOR 1 (Chica) ---
-        self.chica = os.path.join("tdv-platform-equipo-C", "chica.png")
-        self.player_sprite = arcade.Sprite(self.chica, 0.1)
+        self.player_sprite = arcade.Sprite("chica.png", 0.1)
         self.player_sprite.center_x = 100
         self.player_sprite.center_y = 150
         self.scene.add_sprite("Player1", self.player_sprite)
 
         # --- JUGADOR 2 (Chico) ---
-        self.chico = os.path.join("tdv-platform-equipo-C", "chico.png")
-        self.player_sprite2 = arcade.Sprite(self.chico, 0.1)
+        self.player_sprite2 = arcade.Sprite("chico.png", 0.1)
         self.player_sprite2.center_x = 200
         self.player_sprite2.center_y = 150
         self.scene.add_sprite("Player2", self.player_sprite2)
@@ -89,7 +86,7 @@ class MyGame(arcade.Window):
                              arcade.color.RED, 20, anchor_x="center")
 
         if self.victoria:
-            arcade.draw_text("¡VICTORIA !", SCREEN_WIDTH/2, SCREEN_HEIGHT/2, 
+            arcade.draw_text("¡VICTORIA COOPERATIVA!", SCREEN_WIDTH/2, SCREEN_HEIGHT/2, 
                              arcade.color.GOLD, 40, anchor_x="center", bold=True)
             arcade.draw_text("Presiona 'R' para reiniciar", SCREEN_WIDTH/2, SCREEN_HEIGHT/2 - 50, 
                              arcade.color.WHITE, 20, anchor_x="center")
