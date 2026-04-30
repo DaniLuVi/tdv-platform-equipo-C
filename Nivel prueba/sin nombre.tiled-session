@@ -1,5 +1,5 @@
 {
-    "activeFile": "sin nombre.tmx",
+    "activeFile": "bloque.tsx",
     "expandedProjectPaths": [
         "."
     ],
@@ -81,10 +81,10 @@
         },
         "sin nombre.tmx": {
             "scale": 0.39434895833333333,
-            "selectedLayer": 0,
+            "selectedLayer": 4,
             "viewCenter": {
                 "x": 981.3643267516344,
-                "y": 1323.7007198045303
+                "y": 289.0840652446674
             }
         },
         "veneno.tsx": {
