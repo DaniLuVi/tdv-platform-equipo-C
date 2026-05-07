@@ -36,6 +36,8 @@ class MyGame(arcade.Window):
         arcade.set_background_color(arcade.color.SKY_BLUE)
 
         map_name = os.path.join(self.script_path, "nivel2.tmx")
+        print("SETUP LLAMADO")
+        print("TMX que está cargando Arcade:", map_name)
 
         layer_options = {
             "Capa de patrones 1": {"use_spatial_hash": True},
@@ -43,20 +45,22 @@ class MyGame(arcade.Window):
             "Capa de patrones 5": {"use_spatial_hash": True},
             "agua": {"use_spatial_hash": True},
             "Capa de patrones 3": {"use_spatial_hash": False},
-            "Capa de patrones 2": {"use_spatial_hash": False},}
+            "Capa de patrones 2": {"use_spatial_hash": False},
+            "Capa de patrones 4": {"use_spatial_hash": False},
+        }
 
-        try:
-            mapa_temp = arcade.load_tilemap(map_name)
-            alto_real_mapa = mapa_temp.height * mapa_temp.tile_height
-            escala_auto = SCREEN_HEIGHT / alto_real_mapa
+        # Cargamos el mapa sin capturar la excepción para ver cualquier error real
+        mapa_temp = arcade.load_tilemap(map_name)
+        alto_real_mapa = mapa_temp.height * mapa_temp.tile_height
+        escala_auto = SCREEN_HEIGHT / alto_real_mapa
 
-            tile_map = arcade.load_tilemap(map_name, scaling=escala_auto, layer_options=layer_options)
-            self.scene = arcade.Scene.from_tilemap(tile_map)
-            print("Mapa cargado con éxito.")
-        except Exception as e:
-            print(f"Error cargando el archivo TMX: {e}")
-            self.scene = None
-            return
+        tile_map = arcade.load_tilemap(
+            map_name,
+            scaling=escala_auto,
+            layer_options=layer_options
+        )
+        self.scene = arcade.Scene.from_tilemap(tile_map)
+        print("Mapa cargado con éxito.")
 
         # --- CALCULAR TAMAÑO REAL DEL MAPA ---
         alto_mapa = tile_map.height * tile_map.tile_height * tile_map.scaling
@@ -85,12 +89,23 @@ class MyGame(arcade.Window):
         except KeyError:
             muros = []
 
-        self.physics_engine = arcade.PhysicsEnginePlatformer(self.player_sprite, gravity_constant=GRAVITY, walls=muros)
-        self.physics_engine2 = arcade.PhysicsEnginePlatformer(self.player_sprite2, gravity_constant=GRAVITY, walls=muros)
+        self.physics_engine = arcade.PhysicsEnginePlatformer(
+            self.player_sprite,
+            gravity_constant=GRAVITY,
+            walls=muros
+        )
+        self.physics_engine2 = arcade.PhysicsEnginePlatformer(
+            self.player_sprite2,
+            gravity_constant=GRAVITY,
+            walls=muros
+        )
 
     def crear_objeto_que_cae(self):
         """Crea un coco que cae desde arriba"""
-        ruta = os.path.join(self.script_path, "WhatsApp_Image_2026-05-07_at_00.13.20-removebg-preview.png")  # Cambia por tu sprite
+        ruta = os.path.join(
+            self.script_path,
+            "WhatsApp_Image_2026-05-07_at_00.13.20-removebg-preview.png"
+        )
 
         sprite = arcade.Sprite(ruta, 0.15)
 
@@ -109,13 +124,28 @@ class MyGame(arcade.Window):
         if self.scene:
             self.scene.draw()
 
-        # DIBUJAR LOS COCOS ENCIMA DE TODO
+        # Dibujar los cocos encima de todo
         if self.objetos_que_caen:
             self.objetos_que_caen.draw()
 
         if self.victoria:
-            arcade.draw_text("¡VICTORIA!",SCREEN_WIDTH/2, SCREEN_HEIGHT/2,arcade.color.GOLD, 40, anchor_x="center", bold=True)
-            arcade.draw_text("Presiona 'R' para reiniciar",SCREEN_WIDTH/2, SCREEN_HEIGHT/2 - 50,arcade.color.WHITE, 20, anchor_x="center")
+            arcade.draw_text(
+                "¡VICTORIA!",
+                SCREEN_WIDTH / 2,
+                SCREEN_HEIGHT / 2,
+                arcade.color.GOLD,
+                40,
+                anchor_x="center",
+                bold=True
+            )
+            arcade.draw_text(
+                "Presiona 'R' para reiniciar",
+                SCREEN_WIDTH / 2,
+                SCREEN_HEIGHT / 2 - 50,
+                arcade.color.WHITE,
+                20,
+                anchor_x="center"
+            )
 
     def on_update(self, delta_time):
         if self.victoria:
@@ -128,11 +158,16 @@ class MyGame(arcade.Window):
         capas_muerte_j1 = ["Capa de patrones 7", "agua"]
         capas_muerte_j2 = ["Capa de patrones 7", "Capa de patrones 5"]
 
-        for jugador, capas in [(self.player_sprite, capas_muerte_j1),
-                               (self.player_sprite2, capas_muerte_j2)]:
+        for jugador, capas in [
+            (self.player_sprite, capas_muerte_j1),
+            (self.player_sprite2, capas_muerte_j2)
+        ]:
             for nombre in capas:
                 try:
-                    if arcade.check_for_collision_with_list(jugador, self.scene[nombre]):
+                    if arcade.check_for_collision_with_list(
+                        jugador,
+                        self.scene[nombre]
+                    ):
                         self.setup()
                         return
                 except KeyError:
@@ -140,8 +175,14 @@ class MyGame(arcade.Window):
 
         # --- VICTORIA ---
         try:
-            en_puerta1 = arcade.check_for_collision_with_list(self.player_sprite, self.scene["Capa de patrones 3"])
-            en_puerta2 = arcade.check_for_collision_with_list(self.player_sprite2, self.scene["Capa de patrones 2"])
+            en_puerta1 = arcade.check_for_collision_with_list(
+                self.player_sprite,
+                self.scene["Capa de patrones 3"]
+            )
+            en_puerta2 = arcade.check_for_collision_with_list(
+                self.player_sprite2,
+                self.scene["Capa de patrones 2"]
+            )
             if en_puerta1 and en_puerta2:
                 self.victoria = True
         except KeyError:
@@ -158,8 +199,10 @@ class MyGame(arcade.Window):
 
         # Colisión con jugadores
         for obj in self.objetos_que_caen:
-            if arcade.check_for_collision(obj, self.player_sprite) or \
-               arcade.check_for_collision(obj, self.player_sprite2):
+            if (
+                arcade.check_for_collision(obj, self.player_sprite)
+                or arcade.check_for_collision(obj, self.player_sprite2)
+            ):
                 self.setup()
                 return
 
@@ -205,3 +248,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
