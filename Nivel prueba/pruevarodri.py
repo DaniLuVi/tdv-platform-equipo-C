@@ -3,7 +3,7 @@ import os
 
 # --- Configuración ---
 SCREEN_WIDTH = 800
-SCREEN_HEIGHT = 700 
+SCREEN_HEIGHT = 800 
 SCREEN_TITLE = "Duelo de Plataformas - Misión Cooperativa"
 
 # Valores de física

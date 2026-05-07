@@ -1,7 +1,8 @@
+from abc import ABC, abstractmethod
 import arcade
 import arcade.gui
 import math
-from abc import ABC, abstractmethod
+import os
 
 # --- CONFIGURACIÓN DINÁMICA ---
 # Obtenemos el tamaño del monitor para que casi lo ocupe todo
@@ -43,8 +44,14 @@ class MenuView(arcade.View):
         self.mostrar_error = False
         self.tiempo_error = 0.0
 
+        # Cargamos el sonido de la pantalla principal
+        musica = os.path.join("tdv-platform-equipo-C", "musica_niveles", "musica_menu_inicial.mp3")
+        self.musica_inicio = arcade.load_sound(musica)
+
     def on_show_view(self):
         arcade.set_background_color(arcade.color.DARK_BLUE_GRAY)
+
+        self.musica_actual = arcade.play_sound(self.musica_inicio, volume = self.window.volumen, loop = True)
 
     def on_update(self, delta_time):
         # Si el error está activo, sumamos el tiempo para que desaparezca tras 3 segundos
@@ -122,6 +129,10 @@ class MenuView(arcade.View):
         if cx - 150 < x < cx + 150 and cy_ajustes - 25 < y < cy_ajustes + 25:
             settings_view = SettingsView()
             self.window.show_view(settings_view)
+
+    def on_hide_view(self):
+        # Paramos la música antes de pasar a la siguiente vista que se muestra
+        arcade.stop_sound(self.musica_actual)
 
 # --- VISTA: AJUSTES ---
 class SettingsView(arcade.View):
@@ -219,8 +230,14 @@ class Mapa(arcade.View):
            5: VistaNivelEnMapa(nivel=5, x=200, y=300, conexiones=[4]),
         }
 
+        # Cargamos el sonido de la pantalla del mapa de niveles
+        musica = os.path.join("tdv-platform-equipo-C", "musica_niveles", "musica_mapa_niveles.mp3")
+        self.musica_mapa = arcade.load_sound(musica)
+
     def on_show_view(self):
         arcade.set_background_color(arcade.color.BROWN_NOSE)
+
+        self.musica_actual = arcade.play_sound(self.musica_mapa, volume = self.window.volumen, loop = True)
 
     def on_draw(self):
         self.clear()
@@ -263,6 +280,10 @@ class Mapa(arcade.View):
         if key == arcade.key.ESCAPE:
             menu_view = MenuView()
             self.window.show_view(menu_view)
+
+    def on_hide_view(self):
+        # Paramos la música antes de pasar a la siguiente vista que se muestra
+        arcade.stop_sound(self.musica_actual)
 
 # Esta va a ser la vista final que va a mostrar que se ha completado todo el juego y cerrará el programa cuando se pulse una tecla
 class Victoria_Fin_Juego(arcade.View):

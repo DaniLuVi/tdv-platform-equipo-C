@@ -4,7 +4,7 @@ import random
 
 # --- Configuración ---
 SCREEN_WIDTH = 800
-SCREEN_HEIGHT = 700
+SCREEN_HEIGHT = 800
 SCREEN_TITLE = "playa - cuidado con los cocos"
 
 # Valores de física
