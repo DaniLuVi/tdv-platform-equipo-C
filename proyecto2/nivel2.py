@@ -35,7 +35,7 @@ class MyGame(arcade.Window):
         self.victoria = False
         arcade.set_background_color(arcade.color.SKY_BLUE)
 
-        map_name = os.path.join(self.script_path, "nivel2.tmx")
+        map_name = os.path.join(self.script_path, "nivel2real.tmx")
         print("SETUP LLAMADO")
         print("TMX que está cargando Arcade:", map_name)
 
