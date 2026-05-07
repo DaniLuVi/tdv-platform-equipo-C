@@ -1,0 +1,106 @@
+{
+    "activeFile": "nivel2.tmx",
+    "expandedProjectPaths": [
+        "."
+    ],
+    "file.lastUsedOpenFilter": "Todos los archivos (*)",
+    "fileStates": {
+        "C:/Users/Usuario/Documents/Tec.Videojuegos/tdv-platform-equipo-C/Nivel prueba/agua.tsx": {
+            "scaleInDock": 1
+        },
+        "C:/Users/Usuario/Documents/Tec.Videojuegos/tdv-platform-equipo-C/Nivel prueba/arena.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "C:/Users/Usuario/Documents/Tec.Videojuegos/tdv-platform-equipo-C/Nivel prueba/bloque.tsx": {
+            "scaleInDock": 1
+        },
+        "C:/Users/Usuario/Documents/Tec.Videojuegos/tdv-platform-equipo-C/Nivel prueba/lava1.tsx": {
+            "scaleInDock": 1
+        },
+        "C:/Users/Usuario/Documents/Tec.Videojuegos/tdv-platform-equipo-C/Nivel prueba/puerta f.tsx": {
+            "scaleInDock": 1
+        },
+        "C:/Users/Usuario/Documents/Tec.Videojuegos/tdv-platform-equipo-C/Nivel prueba/puerta m.tsx": {
+            "scaleInDock": 1
+        },
+        "C:/Users/Usuario/Documents/Tec.Videojuegos/tdv-platform-equipo-C/Nivel prueba/sin nombre.tmx": {
+            "scale": 0.39434895833333333,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 961.0777256818332,
+                "y": 959.8098131149706
+            }
+        },
+        "C:/Users/Usuario/Documents/Tec.Videojuegos/tdv-platform-equipo-C/Nivel prueba/veneno.tsx": {
+            "scaleInDock": 1
+        },
+        "arena.tsx": {
+            "scaleInEditor": 1
+        },
+        "arenafondo.tsx": {
+            "scaleInEditor": 1
+        },
+        "lava1-removebg-preview.tsx": {
+            "scaleInEditor": 1
+        },
+        "nivel2.tmx": {
+            "scale": 0.25,
+            "selectedLayer": 1,
+            "viewCenter": {
+                "x": 964,
+                "y": 1214
+            }
+        },
+        "palmera.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "palmeraderecha.tsx": {
+            "scaleInEditor": 1
+        },
+        "puertachica.tsx": {
+            "scaleInEditor": 1
+        },
+        "puertachico.tsx": {
+            "scaleInEditor": 1
+        },
+        "tronco derecha.tsx": {
+            "scaleInEditor": 1
+        },
+        "troncoizquierda.tsx": {
+            "scaleInEditor": 1
+        }
+    },
+    "last.externalTilesetPath": "C:/Users/Usuario/Documents/proyecto2",
+    "last.imagePath": "C:/Users/Usuario/Documents/proyecto2",
+    "map.height": 30,
+    "map.lastUsedFormat": "tmx",
+    "map.tileHeight": 64,
+    "map.tileWidth": 64,
+    "openFiles": [
+        "nivel2.tmx",
+        "C:/Users/Usuario/Documents/Tec.Videojuegos/tdv-platform-equipo-C/Nivel prueba/arena.tsx",
+        "palmera.tsx"
+    ],
+    "project": "sin nombre.tiled-project",
+    "recentFiles": [
+        "arena.tsx",
+        "tronco derecha.tsx",
+        "troncoizquierda.tsx",
+        "palmeraderecha.tsx",
+        "puertachica.tsx",
+        "puertachico.tsx",
+        "arenafondo.tsx",
+        "lava1-removebg-preview.tsx",
+        "palmera.tsx",
+        "C:/Users/Usuario/Documents/Tec.Videojuegos/tdv-platform-equipo-C/Nivel prueba/arena.tsx",
+        "nivel2.tmx",
+        "C:/Users/Usuario/Documents/Tec.Videojuegos/tdv-platform-equipo-C/Nivel prueba/sin nombre.tmx"
+    ],
+    "tileset.lastUsedFormat": "tsx",
+    "tileset.tileSize": {
+        "height": 64,
+        "width": 64
+    }
+}
