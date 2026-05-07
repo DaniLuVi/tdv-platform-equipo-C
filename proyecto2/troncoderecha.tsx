@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<tileset version="1.10" tiledversion="1.12.1" name="puertachica" tilewidth="64" tileheight="64" tilecount="6" columns="2">
- <image source="WhatsApp Image 2026-05-07 at 00.13.20 (2).jpeg" width="128" height="192"/>
+<tileset version="1.10" tiledversion="1.12.1" name="tronco derecha" tilewidth="64" tileheight="64" tilecount="4" columns="2">
+ <image source="123f0706-a9f7-40d2-8fae-e7fbd668ffd1.jpg" width="128" height="128"/>
  <tile id="0">
   <objectgroup draworder="index" id="2">
    <object id="1" x="0" y="0" width="64" height="64"/>
@@ -17,16 +17,6 @@
   </objectgroup>
  </tile>
  <tile id="3">
-  <objectgroup draworder="index" id="2">
-   <object id="1" x="1.33333" y="1.33333" width="64" height="64"/>
-  </objectgroup>
- </tile>
- <tile id="4">
-  <objectgroup draworder="index" id="2">
-   <object id="1" x="0" y="0" width="64" height="64"/>
-  </objectgroup>
- </tile>
- <tile id="5">
   <objectgroup draworder="index" id="2">
    <object id="1" x="0" y="0" width="64" height="64"/>
   </objectgroup>
