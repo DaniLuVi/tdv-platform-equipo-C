@@ -102,7 +102,6 @@ class MyGame(arcade.Window):
         sprite.change_y = -5
 
         self.objetos_que_caen.append(sprite)
-        print("Coco creado en:", sprite.center_x, sprite.center_y)
 
     def on_draw(self):
         self.clear()
