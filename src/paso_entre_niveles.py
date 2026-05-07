@@ -16,12 +16,7 @@ ESTADOS_NIVELES = {
     2: "bloqueado",
     3: "bloqueado",
     4: "bloqueado",
-    5: "bloqueado",
-    6: "bloqueado",
-    7: "bloqueado",
-    8: "bloqueado",
-    9: "bloqueado",
-    10: "bloqueado"
+    5: "bloqueado"
 }
 
 # ------------------ CONSTANTES ------------------
@@ -220,13 +215,8 @@ class Mapa(arcade.View):
            1: VistaNivelEnMapa(nivel=1, x=200, y=500, conexiones=[2]),
            2: VistaNivelEnMapa(nivel=2, x=400, y=500, conexiones=[1, 3]),
            3: VistaNivelEnMapa(nivel=3, x=600, y=500, conexiones=[2, 4]),
-           4: VistaNivelEnMapa(nivel=4, x=800, y=500, conexiones=[3,5]),
-           5: VistaNivelEnMapa(nivel=5, x=200, y=300, conexiones=[6, 7]),
-           6: VistaNivelEnMapa(nivel=6, x=400, y=300, conexiones=[5]),
-           7: VistaNivelEnMapa(nivel=7, x=600, y=300, conexiones=[5,8]),
-           8: VistaNivelEnMapa(nivel=8, x=800, y=300, conexiones=[9]),
-           9: VistaNivelEnMapa(nivel=9, x=1000, y=300, conexiones=[10]),
-           10: VistaNivelEnMapa(nivel=10, x=1200, y=300, conexiones=[]),
+           4: VistaNivelEnMapa(nivel=4, x=800, y=500, conexiones=[3, 5]),
+           5: VistaNivelEnMapa(nivel=5, x=200, y=300, conexiones=[4]),
         }
 
     def on_show_view(self):
@@ -588,37 +578,12 @@ class Nivel5(Nivel):
     def __init__(self):
         super().__init__(numero_nivel=5)
 
-class Nivel6(Nivel):
-    def __init__(self):
-        super().__init__(numero_nivel=6)
-
-class Nivel7(Nivel):
-    def __init__(self):
-        super().__init__(numero_nivel=7)
-
-class Nivel8(Nivel):
-    def __init__(self):
-        super().__init__(numero_nivel=8)
-
-class Nivel9(Nivel):
-    def __init__(self):
-        super().__init__(numero_nivel=9)
-
-class Nivel10(Nivel):
-    def __init__(self):
-        super().__init__(numero_nivel=10)
-
 CLASES_NIVELES = {
     1: Nivel1,
     2: Nivel2,
     3: Nivel3,
     4: Nivel4,
-    5: Nivel5,
-    6: Nivel6,
-    7: Nivel7,
-    8: Nivel8,
-    9: Nivel9,
-    10: Nivel10,
+    5: Nivel5
 }
 
 if __name__ == "__main__":
