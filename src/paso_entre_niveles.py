@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 import arcade
 import arcade.gui
+import json
 import math
 import os
 
@@ -10,6 +11,9 @@ import os
 monitor = arcade.get_display_size()
 SCREEN_WIDTH = int(monitor[0] * 0.9)
 SCREEN_HEIGHT = int(monitor[1] * 0.8)
+
+# Ruta del archivo JSON en el que se va a guardar el progreso de una partida
+ARCHIVO_GUARDADO = "progreso_partidas.json"
 
 # Diccionario para almacenar el estado de cada nivel: no conseguido, conseguido o bloqueado
 ESTADOS_NIVELES = {
@@ -36,6 +40,129 @@ LAVA = 0
 AGUA = 1
 VERDE = 2
 
+PARTIDA_ACTUAL = None
+
+#------------------- FUNCIONES DE GUARDADO Y CARGADO DE PARTIDAS -------------------
+def obtener_nombre_ultima_partida():
+    """Obtiene el nombre de la última partida guardada en el archivo JSON"""
+    if os.path.exists(ARCHIVO_GUARDADO):
+        try:
+            with open(ARCHIVO_GUARDADO, "r") as f:
+                datos = json.load(f)
+                if datos:
+                    if len(datos) >= 10:
+                        return "LLENO"
+                    numero_partida =  max(int(nombre.split(" ")[1]) for nombre in datos.keys() if nombre.startswith("Partida "))
+                    return numero_partida + 1
+        except json.JSONDecodeError:
+            return 1
+    return 1
+
+
+def guardar_partida():
+    """Guarda el progreso de la partida en un archivo JSON"""
+    global ESTADOS_NIVELES, PARTIDA_ACTUAL
+
+    if PARTIDA_ACTUAL is None:
+        res = obtener_nombre_ultima_partida()
+        if res == "LLENO":
+            print("No se pueden crear más de 10 partidas.")
+            return
+        PARTIDA_ACTUAL = "Partida " + str(res)
+
+    datos = {}
+
+    # Leer el archivo, si existe, para no borrar otras partidas guardadas
+    if os.path.exists(ARCHIVO_GUARDADO):
+        try:
+            with open(ARCHIVO_GUARDADO, "r") as f:
+                datos = json.load(f)
+        except json.JSONDecodeError:
+            pass  # Si el archivo está corrupto, lo sobrescribiremos con la nueva partida
+    
+    
+    datos[PARTIDA_ACTUAL] = ESTADOS_NIVELES
+
+    # Guardamos los datos actualizados en el archivo
+    with open(ARCHIVO_GUARDADO, "w") as f:
+        json.dump(datos, f, indent=4)
+        print(f"Partida guardada: {PARTIDA_ACTUAL}")
+
+def cargar_partida(partida):
+    """ Carga una partida"""
+    global ESTADOS_NIVELES, PARTIDA_ACTUAL
+
+    if os.path.exists(ARCHIVO_GUARDADO):
+        try:
+            with open(ARCHIVO_GUARDADO, "r") as f:
+                datos = json.load(f)
+
+                # Verificamos si la partida existe
+                if partida in datos:
+                    ESTADOS_NIVELES.clear()
+                    ESTADOS_NIVELES.update({int(k): v for k, v in datos[partida].items()})
+                    PARTIDA_ACTUAL = partida
+                    print(f"Partida cargada: {PARTIDA_ACTUAL}")
+                    return True
+        except Exception as e:
+            print(f"Error al cargar la partida: {e}")
+
+    return False
+
+
+class SeleccionPartida(arcade.View):
+    def __init__(self):
+        super().__init__()
+        self.manager = arcade.gui.UIManager()
+        self.v_box = arcade.gui.UIBoxLayout(space_between = 15, align = "center")
+
+    def on_show_view(self):
+        self.manager.enable()
+        arcade.set_background_color(arcade.color.DARK_BLUE_GRAY)
+
+        if os.path.exists(ARCHIVO_GUARDADO):
+            try:
+                with open(ARCHIVO_GUARDADO, "r") as f:
+                    datos = json.load(f)
+                    # Creamos un botón por cada partida guardada
+                    for nombre_partida in datos.keys():
+                        btn = arcade.gui.UIFlatButton(text=nombre_partida, width=300)
+                        self.v_box.add(btn)
+
+                        @btn.event("on_click")
+                        def on_click_btn(event):
+                            if cargar_partida(event.source.text):
+                                self.window.show_view(Mapa())
+
+            except Exception as es:
+                print(f"Error al cargar las partidas: {es}")
+
+        # Botón para volver al menú principal
+        btn_volver = arcade.gui.UIFlatButton(text = "VOLVER AL MENÚ", width=300)
+        self.v_box.add(btn_volver)
+        
+        @btn_volver.event("on_click")
+        def on_click_volver(event):
+            self.window.show_view(MenuView())
+
+        # Centrar los botones en pantalla
+        self.manager.add(
+            arcade.gui.UIAnchorLayout().add(
+                child=self.v_box,
+                anchor_x="center_x",
+                anchor_y="center_y"
+            )
+        )
+
+    def on_draw(self):
+        self.clear()
+        arcade.draw_text("SELECCIONA UNA PARTIDA", self.window.width / 2, self.window.height * 0.85,
+                         arcade.color.WHITE, font_size=30, anchor_x="center")
+        self.manager.draw()
+
+    def on_hide_view(self):
+        self.manager.disable()
+
 # --- VISTA: MENÚ PRINCIPAL ---
 class MenuView(arcade.View):
     def __init__(self):
@@ -45,7 +172,7 @@ class MenuView(arcade.View):
         self.tiempo_error = 0.0
 
         # Cargamos el sonido de la pantalla principal
-        musica = os.path.join("tdv-platform-equipo-C", "musica_niveles", "musica_menu_inicial.mp3")
+        musica = os.path.join("musica_niveles", "musica_menu_inicial.mp3")
         self.musica_inicio = arcade.load_sound(musica)
 
     def on_show_view(self):
@@ -96,13 +223,13 @@ class MenuView(arcade.View):
 
     def on_mouse_press(self, x, y, button, modifiers):
         cx, cy = self.window.width / 2, self.window.height / 2
+        global ESTADOS_NIVELES, PARTIDA_ACTUAL
         
         # Clic en Iniciar
         if cx - 150 < x < cx + 150 and cy - 25 < y < cy + 25:
-            # Reseteamos el progreso usando la variable global
-            global ESTADOS_NIVELES
+            # Reseteamos el progreso usando la variable global              
             ESTADOS_NIVELES[1] = "no_conseguido"
-            for i in range(2, 11):
+            for i in range(2, 6):
                 ESTADOS_NIVELES[i] = "bloqueado"
             
             # Limpiamos cualquier error previo y entramos al mapa
@@ -113,14 +240,10 @@ class MenuView(arcade.View):
         # Clic en Continuar
         cy_continuar = cy - 80
         if cx - 150 < x < cx + 150 and cy_continuar - 25 < y < cy_continuar + 25:
-            hay_progreso = ESTADOS_NIVELES[1] == "conseguido"
-            
-            if hay_progreso:
-                self.mostrar_error = False
-                mapa = Mapa()
-                self.window.show_view(mapa)
+            if os.path.exists(ARCHIVO_GUARDADO):
+                self.window.show_view(SeleccionPartida())
+
             else:
-                # Si no hay progreso, activamos el mensaje
                 self.mostrar_error = True
                 self.tiempo_error = 0.0
 
@@ -187,33 +310,15 @@ class VistaNivelEnMapa:
         self.x = x  # Coordenada x del logo del nivel
         self.y = y  # Coordenada y del logo del nivel
         self.conexiones = conexiones  # Conexiones con otros niveles (lista con los niveles)
-        self.radio_logo = 20  # Radio para hacer click en el nivel
+        self.radio_logo = 40  # Radio para hacer click en el nivel
 
-    def draw(self):
-        # Se dibuja el logo del nivel dependiendo del estado del nivel´
+        self.sprite_bloqueado = arcade.Sprite(os.path.join("imgs_niveles_en_mapa", "candado_cerrado.png"), scale=0.2)
+        self.sprite_accesible = arcade.Sprite(os.path.join("imgs_niveles_en_mapa", "candado_abierto.png"), scale=0.3)
+        self.sprite_completado = arcade.Sprite(os.path.join("imgs_niveles_en_mapa", "gema.png"), scale=0.15)
 
-        if ESTADOS_NIVELES[self.nivel] == "no_conseguido":
-            color = arcade.color.GRAY
-            color_borde = arcade.color.YELLOW
-        elif ESTADOS_NIVELES[self.nivel] == "conseguido":
-            color = arcade.color.GREEN
-            color_borde = arcade.color.YELLOW
-        elif ESTADOS_NIVELES[self.nivel] == "bloqueado":
-            color = arcade.color.RED
-            color_borde = arcade.color.LIGHT_BROWN
-
-        arcade.draw_circle_filled(self.x, self.y, self.radio_logo, color)
-        arcade.draw_circle_outline(self.x, self.y, self.radio_logo, color_borde, 3)
-        arcade.draw_text(str(self.nivel), self.x, self.y, arcade.color.BLACK, 12, anchor_x="center", anchor_y="center")
-
-    def on_mouse_press(self, x, y, button, modifiers):
-        if button == arcade.MOUSE_BUTTON_LEFT:
-            distancia = ((x - self.x) ** 2 + (y - self.y) ** 2) ** 0.5
-            if distancia <= self.radio_logo:
-                if ESTADOS_NIVELES[self.nivel] != "bloqueado":
-                    # Lógica para abrir el nivel correspondiente
-                    nivel_pulsado = Nivel(self.nivel)  # Aquí se debería crear la instancia del nivel correspondiente
-                    self.window.show_view(nivel_pulsado)
+        for s in [self.sprite_bloqueado, self.sprite_accesible, self.sprite_completado]:
+            s.center_x = self.x
+            s.center_y = self.y
 
 class Mapa(arcade.View):
     """
@@ -223,19 +328,57 @@ class Mapa(arcade.View):
         super().__init__()
 
         self.niveles = {
-           1: VistaNivelEnMapa(nivel=1, x=200, y=500, conexiones=[2]),
-           2: VistaNivelEnMapa(nivel=2, x=400, y=500, conexiones=[1, 3]),
-           3: VistaNivelEnMapa(nivel=3, x=600, y=500, conexiones=[2, 4]),
-           4: VistaNivelEnMapa(nivel=4, x=800, y=500, conexiones=[3, 5]),
-           5: VistaNivelEnMapa(nivel=5, x=200, y=300, conexiones=[4]),
+           1: VistaNivelEnMapa(nivel=1, x=250, y=500, conexiones=[2]),
+           2: VistaNivelEnMapa(nivel=2, x=500, y=350, conexiones=[1, 3]),
+           3: VistaNivelEnMapa(nivel=3, x=750, y=500, conexiones=[2, 4]),
+           4: VistaNivelEnMapa(nivel=4, x=1000, y=350, conexiones=[3, 5]),
+           5: VistaNivelEnMapa(nivel=5, x=1250, y=500, conexiones=[4]),
         }
 
+        self.lista_sprites = arcade.SpriteList()
+
         # Cargamos el sonido de la pantalla del mapa de niveles
-        musica = os.path.join("tdv-platform-equipo-C", "musica_niveles", "musica_mapa_niveles.mp3")
+        musica = os.path.join("musica_niveles", "musica_mapa_niveles.mp3")
         self.musica_mapa = arcade.load_sound(musica)
+
+        self.manager = arcade.gui.UIManager()
+        self.manager.enable()
+
+        # Creamos un botón para guardar la partida
+        self.boton_guardado = arcade.gui.UIFlatButton(text = "Guardar partida", width = 150)
+
+        # Lo ponemos en la esquina superior derecha
+        self.ancho = arcade.gui.UIAnchorLayout()
+        self.ancho.add(
+            child = self.boton_guardado,
+            anchor_x = "right",
+            anchor_y = "top",
+            align_x = -20,
+            align_y = -20
+        )
+        self.manager.add(self.ancho)
+
+        # Asignamos la función del botón cuando se hace click
+        @self.boton_guardado.event("on_click")
+        def guardar(event):
+            guardar_partida()
+
+    def actualizar_iconos(self):
+        """Carga en el SpriteList solo los iconos que correspondan al estado actual"""
+        self.lista_sprites.clear()
+        for nivel in self.niveles.values():
+            estado = ESTADOS_NIVELES[nivel.nivel]
+            if estado == "bloqueado":
+                self.lista_sprites.append(nivel.sprite_bloqueado)
+            elif estado == "conseguido":
+                self.lista_sprites.append(nivel.sprite_completado)
+            else:
+                self.lista_sprites.append(nivel.sprite_accesible)
 
     def on_show_view(self):
         arcade.set_background_color(arcade.color.BROWN_NOSE)
+        
+        self.actualizar_iconos()
 
         self.musica_actual = arcade.play_sound(self.musica_mapa, volume = self.window.volumen, loop = True)
 
@@ -255,11 +398,14 @@ class Mapa(arcade.View):
 
                     arcade.draw_line(nivel.x, nivel.y, destino.x, destino.y, color_conexion, 3)
 
-        # Dibujar los niveles
-        for nivel in self.niveles.values():
-            nivel.draw()
+        self.lista_sprites.draw()   # Dibujamos los iconos de los niveles
 
-        arcade.draw_text("Presiona ESC para volver al menú", self.window.width / 2, 100,
+        self.manager.draw() # Se muestra el botón de guardado
+
+        arcade.draw_text("Niveles completados: " + str(sum(1 for estado in ESTADOS_NIVELES.values() if estado == "conseguido")), self.window.width / 8, 60, 
+                         arcade.color.WHITE, font_size = 20, anchor_x = "center")
+
+        arcade.draw_text("Presiona ESC para volver al menú", self.window.width / 1.2, 60,
                          arcade.color.WHITE, font_size=20, anchor_x="center")
 
     def on_mouse_press(self, x, y, button, modifiers):
@@ -284,6 +430,8 @@ class Mapa(arcade.View):
     def on_hide_view(self):
         # Paramos la música antes de pasar a la siguiente vista que se muestra
         arcade.stop_sound(self.musica_actual)
+
+        self.manager.disable()  # Se deshabilita para que no intervenga en otras vistas
 
 # Esta va a ser la vista final que va a mostrar que se ha completado todo el juego y cerrará el programa cuando se pulse una tecla
 class Victoria_Fin_Juego(arcade.View):

@@ -58,14 +58,14 @@ class MyGame(arcade.Window):
             return
 
         # --- JUGADOR 1 (Chica) ---
-        self.chica = os.path.join("tdv-platform-equipo-C", "chica.png")
+        self.chica = "chica.png"
         self.player_sprite = arcade.Sprite(self.chica, 0.1)
         self.player_sprite.center_x = 100
         self.player_sprite.center_y = 150
         self.scene.add_sprite("Player1", self.player_sprite)
 
         # --- JUGADOR 2 (Chico) ---
-        self.chico = os.path.join("tdv-platform-equipo-C", "chico.png")
+        self.chico = "chico.png"
         self.player_sprite2 = arcade.Sprite(self.chico, 0.1)
         self.player_sprite2.center_x = 200
         self.player_sprite2.center_y = 150
