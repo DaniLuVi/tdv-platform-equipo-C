@@ -132,6 +132,10 @@ class SeleccionPartida(arcade.View):
                         @btn.event("on_click")
                         def on_click_btn(event):
                             if cargar_partida(event.source.text):
+                                if getattr(self.window, 'reproductor_menu', None):
+                                    arcade.stop_sound(self.window.reproductor_menu)
+                                    self.window.reproductor_menu = None
+
                                 self.window.show_view(Mapa())
 
             except Exception as es:
@@ -178,7 +182,8 @@ class MenuView(arcade.View):
     def on_show_view(self):
         arcade.set_background_color(arcade.color.DARK_BLUE_GRAY)
 
-        self.musica_actual = arcade.play_sound(self.musica_inicio, volume = self.window.volumen, loop = True)
+        if not getattr(self.window, 'reproductor_menu', None) or not self.window.reproductor_menu.playing:
+            self.window.reproductor_menu = arcade.play_sound(self.musica_inicio, volume=self.window.volumen, loop=True)
 
     def on_update(self, delta_time):
         # Si el error está activo, sumamos el tiempo para que desaparezca tras 3 segundos
@@ -234,6 +239,11 @@ class MenuView(arcade.View):
             
             # Limpiamos cualquier error previo y entramos al mapa
             self.mostrar_error = False
+
+            if getattr(self.window, 'reproductor_menu', None):
+                arcade.stop_sound(self.window.reproductor_menu)
+                self.window.reproductor_menu = None
+
             mapa = Mapa()
             self.window.show_view(mapa)
 
@@ -252,10 +262,6 @@ class MenuView(arcade.View):
         if cx - 150 < x < cx + 150 and cy_ajustes - 25 < y < cy_ajustes + 25:
             settings_view = SettingsView()
             self.window.show_view(settings_view)
-
-    def on_hide_view(self):
-        # Paramos la música antes de pasar a la siguiente vista que se muestra
-        arcade.stop_sound(self.musica_actual)
 
 # --- VISTA: AJUSTES ---
 class SettingsView(arcade.View):
@@ -292,10 +298,14 @@ class SettingsView(arcade.View):
         # Clic en MENOS (-)
         if cx - 120 < x < cx - 40 and cy - 20 < y < cy + 20:
             self.window.volumen = max(0.0, self.window.volumen - 0.1)
+            if getattr(self.window, 'reproductor_menu', None):
+                self.window.reproductor_menu.volume = self.window.volumen
 
         # Clic en MÁS (+)
         elif cx + 40 < x < cx + 120 and cy - 20 < y < cy + 20:
             self.window.volumen = min(1.0, self.window.volumen + 0.1)
+            if getattr(self.window, 'reproductor_menu', None):
+                self.window.reproductor_menu.volume = self.window.volumen
 
         # Clic en VOLVER
         elif cx - 60 < x < cx + 60 and 90 < y < 130:
@@ -335,6 +345,11 @@ class Mapa(arcade.View):
            5: VistaNivelEnMapa(nivel=5, x=1250, y=500, conexiones=[4]),
         }
 
+        self.fondo = arcade.Sprite(os.path.join("assets", "imgs_niveles_en_mapa", "fondo.png"), scale = 0.9)
+        
+        self.fondo.center_x = self.window.width / 2
+        self.fondo.center_y = self.window.height / 2
+
         self.lista_sprites = arcade.SpriteList()
 
         # Cargamos el sonido de la pantalla del mapa de niveles
@@ -345,7 +360,13 @@ class Mapa(arcade.View):
         self.manager.enable()
 
         # Creamos un botón para guardar la partida
-        self.boton_guardado = arcade.gui.UIFlatButton(text = "Guardar partida", width = 150)
+        self.img_guardado = arcade.load_texture(os.path.join("assets", "imgs_niveles_en_mapa", "guardado.png"))
+        self.boton_guardado = arcade.gui.UITextureButton(
+            texture=self.img_guardado,
+            texture_hovered=self.img_guardado,
+            texture_pressed=self.img_guardado,
+            scale=0.15
+        )
 
         # Lo ponemos en la esquina superior derecha
         self.ancho = arcade.gui.UIAnchorLayout()
@@ -358,14 +379,22 @@ class Mapa(arcade.View):
         )
         self.manager.add(self.ancho)
 
+        self.mostrar_mensaje_guardado = False
+        self.tiempo = 0.0
+
         # Asignamos la función del botón cuando se hace click
         @self.boton_guardado.event("on_click")
         def guardar(event):
             guardar_partida()
+            self.mostrar_mensaje_guardado = True
+            self.tiempo = 0.0
 
     def actualizar_iconos(self):
         """Carga en el SpriteList solo los iconos que correspondan al estado actual"""
         self.lista_sprites.clear()
+
+        self.lista_sprites.append(self.fondo)
+        
         for nivel in self.niveles.values():
             estado = ESTADOS_NIVELES[nivel.nivel]
             if estado == "bloqueado":
@@ -384,7 +413,7 @@ class Mapa(arcade.View):
 
     def on_draw(self):
         self.clear()
-        
+
         # Dibujar las conexiones entre los niveles
         for nivel in self.niveles.values():
             for conexion in nivel.conexiones:
@@ -403,10 +432,20 @@ class Mapa(arcade.View):
         self.manager.draw() # Se muestra el botón de guardado
 
         arcade.draw_text("Niveles completados: " + str(sum(1 for estado in ESTADOS_NIVELES.values() if estado == "conseguido")), self.window.width / 8, 60, 
-                         arcade.color.WHITE, font_size = 20, anchor_x = "center")
+                         arcade.color.WHITE, font_size = 20, font_name = "Impact", anchor_x = "center")
 
         arcade.draw_text("Presiona ESC para volver al menú", self.window.width / 1.2, 60,
-                         arcade.color.WHITE, font_size=20, anchor_x="center")
+                         arcade.color.WHITE, font_size=20, font_name = "Impact", anchor_x="center")
+
+        if self.mostrar_mensaje_guardado:
+            arcade.draw_text("Partida guardada con éxito", 20, SCREEN_HEIGHT - 120,
+                             arcade.color.GREEN, font_size = 16, font_name = "Impact")
+        
+    def on_update(self, delta_time):
+        if self.mostrar_mensaje_guardado:
+            self.tiempo += delta_time
+            if self.tiempo > 3.0:  # Desaparece tras 3 segundos
+                self.mostrar_mensaje_guardado = False
 
     def on_mouse_press(self, x, y, button, modifiers):
         if button == arcade.MOUSE_BUTTON_LEFT:
