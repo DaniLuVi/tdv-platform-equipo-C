@@ -172,7 +172,7 @@ class MenuView(arcade.View):
         self.tiempo_error = 0.0
 
         # Cargamos el sonido de la pantalla principal
-        musica = os.path.join("musica_niveles", "musica_menu_inicial.mp3")
+        musica = os.path.join("assets", "musica_niveles", "musica_menu_inicial.mp3")
         self.musica_inicio = arcade.load_sound(musica)
 
     def on_show_view(self):
@@ -312,9 +312,9 @@ class VistaNivelEnMapa:
         self.conexiones = conexiones  # Conexiones con otros niveles (lista con los niveles)
         self.radio_logo = 40  # Radio para hacer click en el nivel
 
-        self.sprite_bloqueado = arcade.Sprite(os.path.join("imgs_niveles_en_mapa", "candado_cerrado.png"), scale=0.2)
-        self.sprite_accesible = arcade.Sprite(os.path.join("imgs_niveles_en_mapa", "candado_abierto.png"), scale=0.3)
-        self.sprite_completado = arcade.Sprite(os.path.join("imgs_niveles_en_mapa", "gema.png"), scale=0.15)
+        self.sprite_bloqueado = arcade.Sprite(os.path.join("assets", "imgs_niveles_en_mapa", "candado_cerrado.png"), scale=0.2)
+        self.sprite_accesible = arcade.Sprite(os.path.join("assets", "imgs_niveles_en_mapa", "candado_abierto.png"), scale=0.3)
+        self.sprite_completado = arcade.Sprite(os.path.join("assets", "imgs_niveles_en_mapa", "gema.png"), scale=0.15)
 
         for s in [self.sprite_bloqueado, self.sprite_accesible, self.sprite_completado]:
             s.center_x = self.x
@@ -338,7 +338,7 @@ class Mapa(arcade.View):
         self.lista_sprites = arcade.SpriteList()
 
         # Cargamos el sonido de la pantalla del mapa de niveles
-        musica = os.path.join("musica_niveles", "musica_mapa_niveles.mp3")
+        musica = os.path.join("assets", "musica_niveles", "musica_mapa_niveles.mp3")
         self.musica_mapa = arcade.load_sound(musica)
 
         self.manager = arcade.gui.UIManager()
