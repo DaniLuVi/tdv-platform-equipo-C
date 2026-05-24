@@ -4,7 +4,7 @@ import random
 
 # --- Configuración ---
 SCREEN_WIDTH = 800
-SCREEN_HEIGHT = 800
+SCREEN_HEIGHT = 700
 SCREEN_TITLE = "playa - cuidado con los cocos"
 
 # Valores de física
@@ -67,13 +67,13 @@ class MyGame(arcade.Window):
         ancho_mapa = tile_map.width * tile_map.tile_width * tile_map.scaling
 
         # --- JUGADOR 1 (Chica) ESQUINA SUPERIOR IZQUIERDA ---
-        self.player_sprite = arcade.Sprite("chica.png", 0.08)
+        self.player_sprite = arcade.Sprite("chica.png", 0.07)
         self.player_sprite.center_x = 50
         self.player_sprite.center_y = alto_mapa - 50
         self.scene.add_sprite("Player1", self.player_sprite)
 
         # --- JUGADOR 2 (Chico) ESQUINA INFERIOR DERECHA ---
-        self.player_sprite2 = arcade.Sprite("chico.png", 0.08)
+        self.player_sprite2 = arcade.Sprite("chico.png", 0.07)
         self.player_sprite2.center_x = ancho_mapa - 50
         self.player_sprite2.center_y = 50
         self.scene.add_sprite("Player2", self.player_sprite2)
