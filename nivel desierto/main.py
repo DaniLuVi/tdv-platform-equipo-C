@@ -6,7 +6,7 @@ import os
 # =========================================================================
 ANCHO_VENTANA = 1024
 ALTO_VENTANA = 768
-TITULO_VENTANA = "Nuestro Videojuego - Cooperativo Desierto"
+TITULO_VENTANA = "Nuestro Videojuego - Cooperativo Extremo"
 DIRECTORIO_ACTUAL = os.path.dirname(__file__)
 
 class JuegoDesierto(arcade.Window):
@@ -20,10 +20,12 @@ class JuegoDesierto(arcade.Window):
         self.escena = None
         self.camara = None
         
-        # Listas de Sprites de los nuevos elementos
+        # Listas de Sprites de los elementos
         self.lista_jugadores = arcade.SpriteList()
         self.monedas = arcade.SpriteList()
         self.agua = arcade.SpriteList()
+        self.lava = arcade.SpriteList()   # <- Nueva lista para la lava
+        self.veneno = arcade.SpriteList()
         self.puerta_chico = arcade.SpriteList()
         self.puerta_chica = arcade.SpriteList()
         
@@ -45,8 +47,6 @@ class JuegoDesierto(arcade.Window):
         # -----------------------------------------------------------------
         # 2. CARGAR EL MAPA Y LA CÁMARA (.tmj)
         # -----------------------------------------------------------------
-        # Buscamos tu mapa en formato TMJ
-        # Buscamos tu mapa en formato TMJ (¡atención al guion bajo!)
         ruta_mapa = os.path.join(DIRECTORIO_ACTUAL, "desierto_mapa.tmj")
         try:
             mapa_tiled = arcade.load_tilemap(ruta_mapa, scaling=1.0)
@@ -67,9 +67,9 @@ class JuegoDesierto(arcade.Window):
         self.camara.zoom = min(zoom_x, zoom_y)
 
         # -----------------------------------------------------------------
-        # 3. EXTRAER LAS CAPAS DE TILED (Sólidas vs Triggers)
+        # 3. EXTRAER LAS CAPAS DE TILED
         # -----------------------------------------------------------------
-        # Capas sólidas (Paredes y suelo donde se puede caminar)
+        # Capas sólidas (Paredes y suelo)
         plataformas = arcade.SpriteList()
         for nombre_capa in ["suelo", "arena", "plataformas"]:
             try:
@@ -77,27 +77,24 @@ class JuegoDesierto(arcade.Window):
             except:
                 pass
 
-        # Capa de Monedas
-        try:
-            self.monedas = self.escena.get_sprite_list("monedas")
-        except:
-            pass
+        # Cargar el resto de capas de forma independiente (Triggers)
+        try: self.monedas = self.escena.get_sprite_list("monedas")
+        except: pass
 
-        # Capa de Agua
-        try:
-            self.agua = self.escena.get_sprite_list("agua")
-        except:
-            pass
+        try: self.agua = self.escena.get_sprite_list("agua")
+        except: pass
 
-        # Capas de las Puertas
-        try:
-            self.puerta_chico = self.escena.get_sprite_list("puerta_chico")
-        except:
-            pass
-        try:
-            self.puerta_chica = self.escena.get_sprite_list("puerta_chica")
-        except:
-            pass
+        try: self.lava = self.escena.get_sprite_list("lava") # <- Cargamos la lava
+        except: pass
+
+        try: self.veneno = self.escena.get_sprite_list("veneno")
+        except: pass
+
+        try: self.puerta_chico = self.escena.get_sprite_list("puerta_chico")
+        except: pass
+        
+        try: self.puerta_chica = self.escena.get_sprite_list("puerta_chica")
+        except: pass
 
         # -----------------------------------------------------------------
         # 4. CREAR A LOS PERSONAJES
@@ -112,19 +109,18 @@ class JuegoDesierto(arcade.Window):
             sprite.height = 144
             return sprite
 
-        # Posicionamos al chico arriba a la izquierda y a la chica abajo a la derecha
-        self.chico = crear_personaje("chico", arcade.color.RED)
+        self.chico = crear_personaje("chico", arcade.color.BLUE) # Controles WASD
         self.chico.center_x = 150
         self.chico.center_y = alto_mapa - 150
 
-        self.chica = crear_personaje("chica", arcade.color.HOT_PINK)
+        self.chica = crear_personaje("chica", arcade.color.RED) # Controles Flechas
         self.chica.center_x = ancho_mapa - 300
         self.chica.center_y = 400
 
         self.lista_jugadores.append(self.chico)
         self.lista_jugadores.append(self.chica)
 
-        # Motores de físicas (solo para chocar con las plataformas sólidas)
+        # Motores de físicas (solo chocan con las plataformas sólidas, los fluidos los atraviesan)
         self.motor_chico = arcade.PhysicsEnginePlatformer(self.chico, gravity_constant=0.8, walls=plataformas)
         self.motor_chica = arcade.PhysicsEnginePlatformer(self.chica, gravity_constant=0.8, walls=plataformas)
 
@@ -140,27 +136,27 @@ class JuegoDesierto(arcade.Window):
 
     def on_update(self, delta_time):
         if self.juego_terminado:
-            return # Si ya han ganado o perdido, congelamos el juego
+            return 
 
         # --- Controles del Chico (WASD) ---
         self.chico.change_x = 0
         if arcade.key.A in self.teclas_pulsadas:
-            self.chico.change_x = -5
+            self.chico.change_x = -8
         if arcade.key.D in self.teclas_pulsadas:
-            self.chico.change_x = 5
+            self.chico.change_x = 8
         if arcade.key.W in self.teclas_pulsadas and self.motor_chico.can_jump():
-            self.chico.change_y = 14
+            self.chico.change_y = 22
 
         # --- Controles de la Chica (Flechas) ---
         self.chica.change_x = 0
         if arcade.key.LEFT in self.teclas_pulsadas:
-            self.chica.change_x = -5
+            self.chica.change_x = -8
         if arcade.key.RIGHT in self.teclas_pulsadas:
-            self.chica.change_x = 5
+            self.chica.change_x = 8
         if arcade.key.UP in self.teclas_pulsadas and self.motor_chica.can_jump():
-            self.chica.change_y = 14
+            self.chica.change_y = 22
 
-        # Aplicar físicas de movimiento básico
+        # Aplicar movimientos y gravedades
         self.motor_chico.update()
         self.motor_chica.update()
 
@@ -173,59 +169,52 @@ class JuegoDesierto(arcade.Window):
                 moneda.remove_from_sprite_lists()
 
         # -----------------------------------------------------------------
-        # LÓGICA 2: PELIGRO - SUELO DE AGUA
+        # LÓGICA 2: REGLAS DE SUPERVIVENCIA (Agua, Lava y Veneno)
         # -----------------------------------------------------------------
-        # Si alguno toca el agua, reaparece en su sitio inicial
-        if arcade.check_for_collision_with_list(self.chico, self.agua):
-            self.chico.center_x = 150
-            self.chico.center_y = 600 # Ajusta según la altura de tu mapa para que no caiga infinitamente
-            self.chico.change_y = 0
-            
+        # REGLA 1: Si la chica toca el AGUA -> GAME OVER
         if arcade.check_for_collision_with_list(self.chica, self.agua):
-            # Obtener el ancho del mapa de forma segura
-            ancho_ref = self.chica.center_x if self.chica.center_x > 500 else 1000
-            self.chica.center_x = ancho_ref - 100
-            self.chica.center_y = 400
-            self.chica.change_y = 0
+            self.juego_terminado = True
+            print("¡GAME OVER! La chica ha tocado el agua.")
+            
+        # REGLA 2: Si el chico toca la LAVA -> GAME OVER
+        if arcade.check_for_collision_with_list(self.chico, self.lava):
+            self.juego_terminado = True
+            print("¡GAME OVER! El chico ha tocado la lava.")
+
+        # REGLA 3: Si CUALQUIERA toca el VENENO -> GAME OVER
+        if arcade.check_for_collision_with_list(self.chico, self.veneno) or \
+           arcade.check_for_collision_with_list(self.chica, self.veneno):
+            self.juego_terminado = True
+            print("¡GAME OVER! Un jugador ha tocado el veneno.")
 
         # -----------------------------------------------------------------
         # LÓGICA 3: CONDICIÓN DE VICTORIA (PUERTAS)
         # -----------------------------------------------------------------
-        # Comprobar si el chico está tocando su puerta
-        if arcade.check_for_collision_with_list(self.chico, self.puerta_chico):
-            self.chico_en_meta = True
-        else:
-            self.chico_en_meta = False
+        self.chico_en_meta = bool(arcade.check_for_collision_with_list(self.chico, self.puerta_chico))
+        self.chica_en_meta = bool(arcade.check_for_collision_with_list(self.chica, self.puerta_chica))
 
-        # Comprobar si la chica está tocando su puerta
-        if arcade.check_for_collision_with_list(self.chica, self.puerta_chica):
-            self.chica_en_meta = True
-        else:
-            self.chica_en_meta = False
-
-        # Si AMBOS están en sus respectivas puertas a la vez... ¡Victoria!
         if self.chico_en_meta and self.chica_en_meta:
             self.juego_terminado = True
-            print("¡VICTORIA COOPERATIVA! Ambos jugadores han llegado a las puertas.")
+            print("¡VICTORIA COOPERATIVA!")
 
     # =========================================================================
     # DIBUJO
     # =========================================================================
     def on_draw(self):
         self.clear() 
-        
         self.camara.use() 
         
-        # Dibujamos el escenario de Tiled completo de fondo
-        self.escena.draw()
-        
-        # Dibujamos a los dos personajes encima
-        self.lista_jugadores.draw()
+        self.escena.draw()       # Dibuja el mapa de Tiled completo
+        self.lista_jugadores.draw() # Dibuja los personajes encima
 
-        # Si han ganado, pintamos un texto en mitad de la pantalla
+        # Mostrar carteles finales si el juego ha terminado
         if self.juego_terminado:
-            arcade.draw_text("¡VICTORIA!", ANCHO_VENTANA / 2, ALTO_VENTANA / 2,
-                             arcade.color.GOLDENROD, font_size=50, anchor_x="center")
+            if self.chico_en_meta and self.chica_en_meta:
+                arcade.draw_text("¡VICTORIA!", ANCHO_VENTANA / 2, ALTO_VENTANA / 2,
+                                 arcade.color.GOLDENROD, font_size=50, anchor_x="center")
+            else:
+                arcade.draw_text("GAME OVER", ANCHO_VENTANA / 2, ALTO_VENTANA / 2,
+                                 arcade.color.RED, font_size=50, anchor_x="center")
 
 
 if __name__ == "__main__":
