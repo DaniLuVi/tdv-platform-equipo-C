@@ -10,15 +10,37 @@ SCREEN_TITLE = "Menú Principal - Pantalla Completa"
 
 # --- VISTA: MENÚ PRINCIPAL ---
 class MenuView(arcade.View):
+    def __init__(self):
+        super().__init__()
+        
+        # Creamos la lista para manejar los sprites
+        self.lista_sprites = arcade.SpriteList()
+
+        # --- SPRITE 1 (Izquierda) ---
+        # Asegúrate de tener la imagen en la misma carpeta o poner la ruta correcta
+        self.sprite_1 = arcade.Sprite("chico.png", scale=1.0)
+        self.sprite_1.center_x = SCREEN_WIDTH * 0.25  # 25% del ancho (izquierda)
+        self.sprite_1.bottom = 0    # Suelo
+        self.lista_sprites.append(self.sprite_1)
+
+        # --- SPRITE 2 (Derecha) ---
+        self.sprite_2 = arcade.Sprite("chica.png", scale=1.0)
+        self.sprite_2.center_x = SCREEN_WIDTH * 0.75  # 75% del ancho (derecha)
+        self.sprite_2.bottom = 0    # Suelo
+        self.lista_sprites.append(self.sprite_2)
+
     def on_show_view(self):
         arcade.set_background_color(arcade.color.DARK_BLUE_GRAY)
 
     def on_draw(self):
         self.clear()
         
-        # Título centrado dinámicamente
+        # Dibujamos ambos sprites en pantalla
+        self.lista_sprites.draw()
+        
+        # Título centrado
         arcade.draw_text("MI VIDEOJUEGO", self.window.width / 2, self.window.height * 0.75,
-                         arcade.color.WHITE, font_size=60, anchor_x="center")
+                         arcade.color.WHITE, font_size=50, anchor_x="center")
 
         # --- BOTÓN 1: INICIAR PARTIDA ---
         # Calculamos la posición central
