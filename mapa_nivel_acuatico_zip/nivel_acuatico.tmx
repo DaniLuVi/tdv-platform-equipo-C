@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <map version="1.10" tiledversion="1.12.1" orientation="orthogonal" renderorder="right-down" width="30" height="30" tilewidth="64" tileheight="64" infinite="0" nextlayerid="16" nextobjectid="1">
- <tileset firstgid="1" source="mapa_nivel_acuatico/capa_agua.tsx"/>
- <tileset firstgid="4" source="mapa_nivel_acuatico/agua-removebg-preview.tsx"/>
- <tileset firstgid="5" source="mapa_nivel_acuatico/lava1-removebg-preview.tsx"/>
- <tileset firstgid="6" source="mapa_nivel_acuatico/capa_fondo_acuatico.tsx"/>
- <tileset firstgid="7" source="mapa_nivel_acuatico/veneno.tsx"/>
- <tileset firstgid="8" source="mapa_nivel_acuatico/puerta_chico_acuatico.tsx"/>
- <tileset firstgid="14" source="mapa_nivel_acuatico/puerta_chica_nivel_acuatico.tsx"/>
- <tileset firstgid="20" source="mapa_nivel_acuatico/capa_plataforma.tsx"/>
+ <tileset firstgid="1" source="capa_agua.tsx"/>
+ <tileset firstgid="4" source="agua-removebg-preview.tsx"/>
+ <tileset firstgid="5" source="lava1-removebg-preview.tsx"/>
+ <tileset firstgid="6" source="capa_fondo_acuatico.tsx"/>
+ <tileset firstgid="7" source="veneno.tsx"/>
+ <tileset firstgid="8" source="puerta_chico_acuatico.tsx"/>
+ <tileset firstgid="14" source="puerta_chica_nivel_acuatico.tsx"/>
+ <tileset firstgid="20" source="capa_plataforma.tsx"/>
  <layer id="1" name="capa_agua_solido" width="30" height="30" offsetx="-6.06061" offsety="3.74633">
   <data encoding="csv">
 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
