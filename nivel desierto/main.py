@@ -1,183 +1,153 @@
-import pygame
+import arcade
 import os
-from pytmx.util_pygame import load_pygame
 
 # =========================================================================
 # 1. CONFIGURACIÓN INICIAL
 # =========================================================================
-pygame.init()
-# Esta será la ventana real que verás en tu monitor (tamaño estándar)
 ANCHO_VENTANA = 1024
 ALTO_VENTANA = 768
-pantalla = pygame.display.set_mode((ANCHO_VENTANA, ALTO_VENTANA))
-pygame.display.set_caption("Nuestro Videojuego - Mapa Ajustado a Pantalla")
-reloj = pygame.time.Clock()
-
+TITULO_VENTANA = "Nuestro Videojuego - Arcade 3.0"
 DIRECTORIO_ACTUAL = os.path.dirname(__file__)
-RUTA_MAPA = os.path.join(DIRECTORIO_ACTUAL, "desierto mapa.tmx")
 
-# Cargar el mapa
-try:
-    mapa_tiled = load_pygame(RUTA_MAPA)
-except Exception as e:
-    print(f"Error al cargar el mapa: {e}")
-    pygame.quit()
-    exit()
-
-# =========================================================================
-# 2. CREAR EL "LIENZO VIRTUAL" Y LAS COLISIONES
-# =========================================================================
-# Calculamos el tamaño real y gigante del mapa
-ANCHO_MAPA_REAL = mapa_tiled.width * mapa_tiled.tilewidth
-ALTO_MAPA_REAL = mapa_tiled.height * mapa_tiled.tileheight
-
-# Creamos una superficie invisible del tamaño exacto del mapa
-superficie_virtual = pygame.Surface((ANCHO_MAPA_REAL, ALTO_MAPA_REAL))
-
-# Detectar el suelo para no caer al vacío
-bloques_con_colision = []
-for capa in mapa_tiled.visible_layers:
-    if hasattr(capa, 'data'):
-        # Recuerda revisar que este nombre coincide con el de tu capa de Tiled
-        if capa.name.lower() in ["suelo", "arena", "plataformas"]:
-            for x, y, _ in capa.tiles():
-                px = x * mapa_tiled.tilewidth
-                py = y * mapa_tiled.tileheight
-                rect_bloque = pygame.Rect(px, py, mapa_tiled.tilewidth, mapa_tiled.tileheight)
-                bloques_con_colision.append(rect_bloque)
-
-# =========================================================================
-# 3. CLASE DEL PERSONAJE
-# =========================================================================
-class Jugador:
-    def __init__(self, x, y, nombre_imagen, controles):
-        # 1. Mantenemos el rectángulo de colisión (Ancho: 96, Alto: 144)
-        self.rect = pygame.Rect(x, y, 96, 144)
+class JuegoDesierto(arcade.Window):
+    def __init__(self):
+        super().__init__(ANCHO_VENTANA, ALTO_VENTANA, TITULO_VENTANA)
         
-        # 2. Guardamos los controles asignados a este jugador ("flechas" o "wasd")
-        self.controles = controles
+        # Entradas del teclado
+        self.teclas_pulsadas = set()
+
+        # Elementos del mapa y cámara
+        self.escena = None
+        self.camara = None
         
-        # 3. Cargar la imagen del personaje según el nombre que le pasemos ('chico' o 'chica')
-        ruta_personaje = os.path.join(DIRECTORIO_ACTUAL, f"{nombre_imagen}.png")
+        # REGLA ARCADE 3.0: Los personajes deben ir en una lista para dibujarse
+        self.lista_jugadores = arcade.SpriteList()
+        
+        self.chico = None
+        self.chica = None
+        self.motor_chico = None
+        self.motor_chica = None
+
+    def setup(self):
+        """ Configura el juego y carga los recursos """
+        self.background_color = arcade.color.SKY_BLUE
+
+        # -----------------------------------------------------------------
+        # 2. CARGAR EL MAPA Y LA CÁMARA (Arcade 3.0)
+        # -----------------------------------------------------------------
+        ruta_mapa = os.path.join(DIRECTORIO_ACTUAL, "desierto_mapa.tmj") # <--- CAMBIO AQUÍ
         try:
-            imagen_original = pygame.image.load(ruta_personaje).convert_alpha()
-            # Escalamos la imagen para que encaje en el rectángulo de 96x144
-            self.imagen = pygame.transform.scale(imagen_original, (self.rect.width, self.rect.height))
+            mapa_tiled = arcade.load_tilemap(ruta_mapa, scaling=1.0)
+            self.escena = arcade.Scene.from_tilemap(mapa_tiled)
         except Exception as e:
-            print(f"Error: No se encontró la imagen en {ruta_personaje}. Usando un cuadro temporal.")
-            # Si no encuentra la imagen, crea un cuadro de color liso para que el juego no se rompa
-            self.imagen = pygame.Surface((self.rect.width, self.rect.height))
-            self.imagen.fill((255, 0, 0) if nombre_imagen == "chico" else (255, 105, 180))
+            print(f"Error al cargar el mapa: {e}")
+            arcade.exit()
+            return
 
-        # Variables de físicas
-        self.velocidad_x = 0
-        self.velocidad_y = 0
-        self.en_suelo = False
+        ancho_mapa = mapa_tiled.width * mapa_tiled.tile_width
+        alto_mapa = mapa_tiled.height * mapa_tiled.tile_height
+
+        # Configurar la cámara para que encaje PERFECTAMENTE el mapa entero
+        self.camara = arcade.camera.Camera2D()
+        self.camara.position = (ancho_mapa / 2, alto_mapa / 2)
         
-        self.GRAVEDAD = 0.8
-        self.FUERZA_SALTO = -14
-        self.VELOCIDAD_CAMINAR = 5
+        # Calculamos el zoom para el ancho y el alto, y nos quedamos con el más pequeño (min)
+        # Así nos aseguramos de que el mapa nunca se salga de la pantalla por ningún lado
+        zoom_x = ANCHO_VENTANA / ancho_mapa
+        zoom_y = ALTO_VENTANA / alto_mapa
+        self.camara.zoom = min(zoom_x, zoom_y)
 
-    def manejar_entrada(self):
-        teclas = pygame.key.get_pressed()
-        self.velocidad_x = 0
+        # Juntar todas las capas sólidas
+        plataformas = arcade.SpriteList()
+        for nombre_capa in ["suelo", "arena", "plataformas"]:
+            try:
+                capa_encontrada = self.escena.get_sprite_list(nombre_capa)
+                plataformas.extend(capa_encontrada)
+            except:
+                pass # Si no existe la capa, la ignora sin dar error
+
+        # -----------------------------------------------------------------
+        # 3. CREAR A LOS PERSONAJES
+        # -----------------------------------------------------------------
+        def crear_personaje(nombre, color_error):
+            ruta = os.path.join(DIRECTORIO_ACTUAL, f"{nombre}.png")
+            if os.path.exists(ruta):
+                sprite = arcade.Sprite(ruta)
+            else:
+                sprite = arcade.SpriteSolidColor(96, 144, color_error)
+            
+            sprite.width = 96
+            sprite.height = 144
+            return sprite
+
+        # Crear y posicionar
+        self.chico = crear_personaje("chico", arcade.color.RED)
+        self.chico.center_x = 150
+        self.chico.center_y = alto_mapa - 150
+
+        self.chica = crear_personaje("chica", arcade.color.HOT_PINK)
+        self.chica.center_x = ancho_mapa - 300
+        self.chica.center_y = 400
+
+        # ¡OBLIGATORIO ARCADE 3.0! Meterlos en la lista de jugadores
+        self.lista_jugadores.append(self.chico)
+        self.lista_jugadores.append(self.chica)
+
+        # -----------------------------------------------------------------
+        # 4. MOTOR DE FÍSICAS
+        # -----------------------------------------------------------------
+        self.motor_chico = arcade.PhysicsEnginePlatformer(self.chico, gravity_constant=0.8, walls=plataformas)
+        self.motor_chica = arcade.PhysicsEnginePlatformer(self.chica, gravity_constant=0.8, walls=plataformas)
+
+    # =========================================================================
+    # CONTROLES Y ACTUALIZACIÓN
+    # =========================================================================
+    
+    def on_key_press(self, key, modifiers):
+        self.teclas_pulsadas.add(key)
+
+    def on_key_release(self, key, modifiers):
+        if key in self.teclas_pulsadas:
+            self.teclas_pulsadas.remove(key)
+
+    def on_update(self, delta_time):
+        # Controles del Chico (WASD)
+        self.chico.change_x = 0
+        if arcade.key.A in self.teclas_pulsadas:
+            self.chico.change_x = -5
+        if arcade.key.D in self.teclas_pulsadas:
+            self.chico.change_x = 5
+        if arcade.key.W in self.teclas_pulsadas and self.motor_chico.can_jump():
+            self.chico.change_y = 14
+
+        # Controles de la Chica (Flechas)
+        self.chica.change_x = 0
+        if arcade.key.LEFT in self.teclas_pulsadas:
+            self.chica.change_x = -5
+        if arcade.key.RIGHT in self.teclas_pulsadas:
+            self.chica.change_x = 5
+        if arcade.key.UP in self.teclas_pulsadas and self.motor_chica.can_jump():
+            self.chica.change_y = 14
+
+        # Físicas y colisiones
+        self.motor_chico.update()
+        self.motor_chica.update()
+
+    # =========================================================================
+    # DIBUJO
+    # =========================================================================
+    def on_draw(self):
+        self.clear() 
         
-        # --- CONTROLES PERSONALIZADOS ---
-        if self.controles == "wasd":
-            if teclas[pygame.K_a]:
-                self.velocidad_x = -self.VELOCIDAD_CAMINAR
-            if teclas[pygame.K_d]:
-                self.velocidad_x = self.VELOCIDAD_CAMINAR
-            if teclas[pygame.K_w] and self.en_suelo:
-                self.velocidad_y = self.FUERZA_SALTO
-                self.en_suelo = False
-                
-        elif self.controles == "flechas":
-            if teclas[pygame.K_LEFT]:
-                self.velocidad_x = -self.VELOCIDAD_CAMINAR
-            if teclas[pygame.K_RIGHT]:
-                self.velocidad_x = self.VELOCIDAD_CAMINAR
-            if teclas[pygame.K_UP] and self.en_suelo:
-                self.velocidad_y = self.FUERZA_SALTO
-                self.en_suelo = False
-
-    def actualizar(self, plataformas):
-        # Gravedad
-        self.velocidad_y += self.GRAVEDAD
-        if self.velocidad_y > 15:
-            self.velocidad_y = 15
-
-        # Movimiento Horizontal
-        self.rect.x += self.velocidad_x
-        for p in plataformas:
-            if self.rect.colliderect(p):
-                if self.velocidad_x > 0: self.rect.right = p.left
-                if self.velocidad_x < 0: self.rect.left = p.right
-
-        # Movimiento Vertical
-        self.rect.y += self.velocidad_y
-        self.en_suelo = False
-        for p in plataformas:
-            if self.rect.colliderect(p):
-                if self.velocidad_y > 0:
-                    self.rect.bottom = p.top
-                    self.velocidad_y = 0
-                    self.en_suelo = True
-                elif self.velocidad_y < 0:
-                    self.rect.top = p.bottom
-                    self.velocidad_y = 0
-
-    def dibujar(self, superficie):
-        # Dibujamos la imagen del personaje en su posición
-        superficie.blit(self.imagen, self.rect)
+        self.camara.use() 
+        self.escena.draw()
+        
+        # ARCADE 3.0: Se dibuja la lista entera, no los personajes de uno en uno
+        self.lista_jugadores.draw()
 
 
-# =========================================================================
-# CREAR A LOS PERSONAJES
-# =========================================================================
-
-# 1. El personaje de la izquierda (arriba)
-# X = 150 (cerca de la izquierda), Y = 50 (muy arriba, caerá sobre la primera plataforma)
-chico = Jugador(150, 50, "chico", "wasd")
-
-# 2. El personaje de la derecha (abajo)
-# Como Python ya sabe cuánto mide el mapa de ancho y de alto, usamos esas 
-# variables restándoles un trozo para colocarlo en la esquina inferior derecha.
-chica = Jugador(ANCHO_MAPA_REAL - 300, ALTO_MAPA_REAL - 400, "chica", "flechas")
-
-lista_jugadores = [chico, chica]
-
-# =========================================================================
-# 4. BUCLE PRINCIPAL DEL JUEGO
-# =========================================================================
-ejecutando = True
-while ejecutando:
-    reloj.tick(60)
-
-    # === ACTUALIZAR LÓGICAS ===
-    for personaje in lista_jugadores:
-        personaje.manejar_entrada()
-        personaje.actualizar(bloques_con_colision)
-
-    # === FASE DE DIBUJO ===
-    superficie_virtual.fill((135, 206, 235)) # Cielo azul
-
-    # Dibujar el mapa gigante
-    for capa in mapa_tiled.visible_layers:
-        if hasattr(capa, 'data'):
-            for x, y, imagen_bloque in capa.tiles():
-                px = x * mapa_tiled.tilewidth
-                py = y * mapa_tiled.tileheight
-                superficie_virtual.blit(imagen_bloque, (px, py))
-
-    # Dibujar a TODOS los personajes de la lista encima del mapa
-    for personaje in lista_jugadores:
-        personaje.dibujar(superficie_virtual)
-
-    # Encoger el lienzo virtual y pegarlo en la ventana real
-    pantalla_escalada = pygame.transform.scale(superficie_virtual, (ANCHO_VENTANA, ALTO_VENTANA))
-    pantalla.blit(pantalla_escalada, (0, 0))
-
-    pygame.display.flip()
-
-pygame.quit()
+# Arrancar el programa
+if __name__ == "__main__":
+    juego = JuegoDesierto()
+    juego.setup()
+    arcade.run()
