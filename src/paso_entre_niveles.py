@@ -179,6 +179,13 @@ class MenuView(arcade.View):
         # Creamos la lista para manejar los sprites
         self.lista_sprites = arcade.SpriteList()
 
+        self.fondo = arcade.Sprite(os.path.join("assets", "fondo_inicio.png"))
+        self.fondo.width = SCREEN_WIDTH
+        self.fondo.height = SCREEN_HEIGHT
+        self.fondo.center_x = SCREEN_WIDTH / 2
+        self.fondo.center_y = SCREEN_HEIGHT / 2
+        self.lista_sprites.append(self.fondo)
+
         # --- SPRITE 1 (Izquierda) ---
         self.sprite_1 = arcade.Sprite("chico.png", scale=1.0)
         self.sprite_1.center_x = SCREEN_WIDTH * 0.17  # 17% del ancho (izquierda)

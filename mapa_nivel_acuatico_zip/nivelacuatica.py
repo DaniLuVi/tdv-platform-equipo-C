@@ -53,16 +53,16 @@ class MyGame(arcade.Window):
         self.player_list = arcade.SpriteList()
         self.player_sprite = arcade.Sprite(
             ":resources:images/animated_characters/female_person/femalePerson_idle.png",
-            1
+            0.5
         )
-        self.player_sprite.center_x = 200
-        self.player_sprite.center_y = 200
+        self.player_sprite.center_x = 150
+        self.player_sprite.center_y = 100
         self.player_list.append(self.player_sprite)
 
         self.physics_engine = arcade.PhysicsEnginePlatformer(
             self.player_sprite,
             walls=self.agua_solido_list,
-            gravity_constant=1.0
+            gravity_constant=0.8
         )
 
     def on_draw(self):

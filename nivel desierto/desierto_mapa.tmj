@@ -340,7 +340,7 @@
         {
          "columns":24,
          "firstgid":1,
-         "image":"..\/..\/..\/mapa videojuego\/desierto2.jpg",
+         "image":"desierto2.jpg",
          "imageheight":980,
          "imagewidth":1470,
          "margin":0,
@@ -353,7 +353,7 @@
         {
          "columns":1,
          "firstgid":385,
-         "image":"..\/..\/..\/veneno-removebg-preview.png",
+         "image":"veneno-removebg-preview.png",
          "imageheight":64,
          "imagewidth":64,
          "margin":0,

@@ -47,7 +47,7 @@ class JuegoDesierto(arcade.Window):
         # -----------------------------------------------------------------
         # 2. CARGAR EL MAPA Y LA CÁMARA (.tmj)
         # -----------------------------------------------------------------
-        ruta_mapa = os.path.join(DIRECTORIO_ACTUAL, "desierto_mapa.tmj")
+        ruta_mapa = os.path.join("nivel desierto", "desierto_mapa.tmj")
         try:
             mapa_tiled = arcade.load_tilemap(ruta_mapa, scaling=1.0)
             self.escena = arcade.Scene.from_tilemap(mapa_tiled)
@@ -100,7 +100,7 @@ class JuegoDesierto(arcade.Window):
         # 4. CREAR A LOS PERSONAJES
         # -----------------------------------------------------------------
         def crear_personaje(nombre, color_error):
-            ruta = os.path.join(DIRECTORIO_ACTUAL, f"{nombre}.png")
+            ruta = os.path.join(f"{nombre}.png")
             if os.path.exists(ruta):
                 sprite = arcade.Sprite(ruta)
             else:
