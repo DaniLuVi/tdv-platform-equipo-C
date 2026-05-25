@@ -19,5 +19,12 @@
         "3": "bloqueado",
         "4": "bloqueado",
         "5": "bloqueado"
+    },
+    "Partida 4": {
+        "1": "conseguido",
+        "2": "conseguido",
+        "3": "no_conseguido",
+        "4": "bloqueado",
+        "5": "bloqueado"
     }
 }
