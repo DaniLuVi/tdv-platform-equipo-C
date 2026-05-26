@@ -5,13 +5,13 @@ import os
 # CONFIGURACIÓN
 # ---------------------------------------------------
 
-SCREEN_WIDTH = 900
-SCREEN_HEIGHT = 950
+SCREEN_WIDTH = 768
+SCREEN_HEIGHT = 772
 SCREEN_TITLE = "Nivel Acuático – Arcade"
 
 GRAVITY = 1.0
 PLAYER_MOVEMENT_SPEED = 5
-PLAYER_JUMP_SPEED = 20
+PLAYER_JUMP_SPEED = 18
 
 
 class MyGame(arcade.Window):
@@ -22,7 +22,7 @@ class MyGame(arcade.Window):
             SCREEN_WIDTH,
             SCREEN_HEIGHT,
             SCREEN_TITLE,
-            resizable=True
+            resizable=False
         )
 
         arcade.set_background_color(arcade.color.BLACK)
@@ -57,18 +57,20 @@ class MyGame(arcade.Window):
         # PLATAFORMAS MÓVILES
         # ---------------------------------------------------
 
+        # velocidad más lenta
         self.velocidad_plataformas = 2
 
+        # límites
         self.altura_minima = 0
         self.altura_maxima = 0
 
-        # empieza bajando
-        self.direccion_plataformas = -1
+        self.estado_plataformas = "esperando_arriba"
 
-        # pausa plataformas
-        self.en_pausa = False
-        self.tiempo_pausa = 5
+        # temporizador
         self.contador_pausa = 0
+
+        # segundos de pausa
+        self.tiempo_pausa = 2
 
     # ---------------------------------------------------
     # SETUP
@@ -161,8 +163,7 @@ class MyGame(arcade.Window):
             * self.tile_map.scaling
         )
 
-        # +50 para que no se corte arriba
-        self.set_size(int(ancho_mapa), int(alto_mapa + 50))
+        self.set_size(int(ancho_mapa), int(alto_mapa))
 
         # ---------------------------------------------------
         # LÍMITES PLATAFORMAS
@@ -174,7 +175,7 @@ class MyGame(arcade.Window):
             self.altura_maxima = self.plataformas_moviles[0].bottom
 
             # cuánto bajan
-            self.altura_minima = self.altura_maxima - 120
+            self.altura_minima = self.altura_maxima - 102
 
         # ---------------------------------------------------
         # JUGADORES
@@ -263,50 +264,68 @@ class MyGame(arcade.Window):
         self.physics_engine2.update()
 
         # ---------------------------------------------------
-        # PLATAFORMAS MÓVILES
+        # PLATAFORMAS CON PAUSAS
         # ---------------------------------------------------
 
         if self.plataformas_moviles:
 
-            # mover si NO está pausada
-            if not self.en_pausa:
+            # -----------------------------
+            # ESPERANDO ARRIBA
+            # -----------------------------
+
+            if self.estado_plataformas == "esperando_arriba":
+
+                self.contador_pausa += delta_time
+
+                if self.contador_pausa >= self.tiempo_pausa:
+
+                    self.contador_pausa = 0
+                    self.estado_plataformas = "bajando"
+
+            # -----------------------------
+            # BAJANDO
+            # -----------------------------
+
+            elif self.estado_plataformas == "bajando":
 
                 for plataforma in self.plataformas_moviles:
+                    plataforma.center_y -= self.velocidad_plataformas
 
-                    plataforma.center_y += (
-                        self.velocidad_plataformas
-                        * self.direccion_plataformas
-                    )
-
-                # llegó abajo
                 if (
                     self.plataformas_moviles[0].bottom
                     <= self.altura_minima
                 ):
 
-                    self.en_pausa = True
-                    self.contador_pausa = 0
+                    self.estado_plataformas = "esperando_abajo"
 
-                # llegó arriba
-                elif (
-                    self.plataformas_moviles[0].bottom
-                    >= self.altura_maxima
-                ):
+            # -----------------------------
+            # ESPERANDO ABAJO
+            # -----------------------------
 
-                    self.en_pausa = True
-                    self.contador_pausa = 0
+            elif self.estado_plataformas == "esperando_abajo":
 
-            else:
-
-                # tiempo espera
                 self.contador_pausa += delta_time
 
                 if self.contador_pausa >= self.tiempo_pausa:
 
-                    # cambiar dirección
-                    self.direccion_plataformas *= -1
+                    self.contador_pausa = 0
+                    self.estado_plataformas = "subiendo"
 
-                    self.en_pausa = False
+            # -----------------------------
+            # SUBIENDO
+            # -----------------------------
+
+            elif self.estado_plataformas == "subiendo":
+
+                for plataforma in self.plataformas_moviles:
+                    plataforma.center_y += self.velocidad_plataformas
+
+                if (
+                    self.plataformas_moviles[0].bottom
+                    >= self.altura_maxima
+                ):
+
+                    self.estado_plataformas = "esperando_arriba"
 
         # ---------------------------------------------------
         # MUERTE CHICA
