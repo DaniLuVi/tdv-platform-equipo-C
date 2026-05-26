@@ -5,6 +5,7 @@ SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 800
 SCREEN_TITLE = "Nivel Acuático – Arcade"
 
+
 class MyGame(arcade.Window):
 
     def __init__(self):
