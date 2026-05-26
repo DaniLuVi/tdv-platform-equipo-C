@@ -4,31 +4,38 @@
  <tile id="0">
   <objectgroup draworder="index" id="2">
    <object id="1" x="0" y="0" width="64" height="64"/>
+   <object id="2" x="0" y="0" width="64" height="64"/>
   </objectgroup>
  </tile>
  <tile id="1">
   <objectgroup draworder="index" id="2">
    <object id="1" x="0" y="0" width="64" height="64"/>
+   <object id="2" x="0" y="0" width="64" height="64"/>
   </objectgroup>
  </tile>
  <tile id="2">
   <objectgroup draworder="index" id="2">
    <object id="1" x="0" y="0" width="64" height="64"/>
+   <object id="2" x="0" y="0" width="64" height="64"/>
   </objectgroup>
  </tile>
  <tile id="3">
   <objectgroup draworder="index" id="2">
    <object id="1" x="0" y="0" width="64" height="64"/>
+   <object id="2" x="0" y="0" width="64" height="64"/>
   </objectgroup>
  </tile>
  <tile id="4">
   <objectgroup draworder="index" id="2">
    <object id="1" x="0" y="0" width="64" height="64"/>
+   <object id="2" x="0" y="0" width="64" height="64"/>
   </objectgroup>
  </tile>
  <tile id="5">
   <objectgroup draworder="index" id="2">
    <object id="1" x="0" y="0" width="64" height="64"/>
+   <object id="2" x="0" y="0" width="64" height="64"/>
+   <object id="3" x="0" y="0" width="64" height="64"/>
   </objectgroup>
  </tile>
 </tileset>
