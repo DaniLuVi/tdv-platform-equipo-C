@@ -71,7 +71,7 @@ class MyGame(arcade.Window):
 
         # Jugador 2
         self.player_sprite2 = arcade.Sprite("chico.png", 0.07)
-        self.player_sprite2.center_x = 190
+        self.player_sprite2.center_x = 700
         self.player_sprite2.center_y = 750
         self.scene.add_sprite("Player2", self.player_sprite2)
 
