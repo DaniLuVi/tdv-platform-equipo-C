@@ -115,20 +115,30 @@ class SeleccionPartida(arcade.View):
     def __init__(self):
         super().__init__()
         self.manager = arcade.gui.UIManager()
-        self.v_box = arcade.gui.UIBoxLayout(space_between = 15, align = "center")
 
     def on_show_view(self):
         self.manager.enable()
+        self.manager.clear()  # Limpiamos cualquier elemento previo del manager
+
         arcade.set_background_color(arcade.color.DARK_BLUE_GRAY)
+
+        # Contenedor Grid: Guardará las dos columnas separadas por 50 píxeles
+        contenedor_columnas = arcade.gui.UIBoxLayout(vertical=False, space_between=100)
+        
+        # Las dos columnas: Guardarán un máximo de 5 botones cada una
+        columna_1 = arcade.gui.UIBoxLayout(vertical=True, space_between=15)
+        columna_2 = arcade.gui.UIBoxLayout(vertical=True, space_between=15)
+
+        contenedor_columnas.add(columna_1)
+        contenedor_columnas.add(columna_2)
 
         if os.path.exists(ARCHIVO_GUARDADO):
             try:
                 with open(ARCHIVO_GUARDADO, "r") as f:
                     datos = json.load(f)
                     # Creamos un botón por cada partida guardada
-                    for nombre_partida in datos.keys():
-                        btn = arcade.gui.UIFlatButton(text=nombre_partida, width=300)
-                        self.v_box.add(btn)
+                    for i, nombre_partida in enumerate(datos.keys()):
+                        btn = arcade.gui.UIFlatButton(text=nombre_partida, width=250)
 
                         @btn.event("on_click")
                         def on_click_btn(event):
@@ -139,25 +149,38 @@ class SeleccionPartida(arcade.View):
 
                                 self.window.show_view(Mapa())
 
+                        if i < 5:
+                            columna_1.add(btn)
+                        else:
+                            columna_2.add(btn)
+
             except Exception as es:
                 print(f"Error al cargar las partidas: {es}")
 
+        anclaje_columnas = arcade.gui.UIAnchorLayout()
+        anclaje_columnas.add(
+            child=contenedor_columnas,
+            anchor_x="center_x",
+            anchor_y="center_y",
+            align_x = -100  # Ajuste horizontal para que quede un poco más a la izquierda del centro
+        )
+        self.manager.add(anclaje_columnas)
+
         # Botón para volver al menú principal
-        btn_volver = arcade.gui.UIFlatButton(text = "VOLVER AL MENÚ", width=300)
-        self.v_box.add(btn_volver)
+        btn_volver = arcade.gui.UIFlatButton(text = "VOLVER AL MENÚ (ESC)", width=300)
         
         @btn_volver.event("on_click")
         def on_click_volver(event):
             self.window.show_view(MenuView())
 
-        # Centrar los botones en pantalla
-        self.manager.add(
-            arcade.gui.UIAnchorLayout().add(
-                child=self.v_box,
-                anchor_x="center_x",
-                anchor_y="center_y"
-            )
+        anclaje_volver = arcade.gui.UIAnchorLayout()
+        anclaje_volver.add(
+            child=btn_volver,
+            anchor_x="center_x",
+            anchor_y="bottom",
+            align_y=60  # Lo separamos 60 píxeles del borde inferior de la ventana
         )
+        self.manager.add(anclaje_volver)
 
     def on_draw(self):
         self.clear()
@@ -167,6 +190,10 @@ class SeleccionPartida(arcade.View):
 
     def on_hide_view(self):
         self.manager.disable()
+
+    def on_key_press(self, key, modifiers):
+        if key == arcade.key.ESCAPE:
+            self.window.show_view(MenuView())
 
 # --- VISTA: MENÚ PRINCIPAL ---
 class MenuView(arcade.View):
@@ -523,7 +550,7 @@ class VistaFinNivel(arcade.View):
         self.h_box = arcade.gui.UIBoxLayout(vertical=False, space_between=20)
 
         # --- BOTÓN PRINCIPAL (Siguiente o Reiniciar) ---
-        texto_boton_1 = "Siguiente nivel" if self.color == arcade.color.GREEN else "Reiniciar nivel"
+        texto_boton_1 = "Siguiente nivel (ENTER)" if self.color == arcade.color.GREEN else "Reiniciar nivel (ENTER)"
         boton_accion = arcade.gui.UIFlatButton(text=texto_boton_1, width=250)
         self.h_box.add(boton_accion)
 
@@ -714,6 +741,10 @@ class Nivel(arcade.View):
 class Nivel1(Nivel):
     def __init__(self):
         super().__init__(numero_nivel=1)
+        
+        """# Cargamos el sonido de la vista del nivel 1
+        musica = os.path.join("assets", "musica_niveles", "musica_mapa_niveles.mp3")
+        self.musica_mapa = arcade.load_sound(musica)"""
 
     def setup(self):
         self.victoria = False
