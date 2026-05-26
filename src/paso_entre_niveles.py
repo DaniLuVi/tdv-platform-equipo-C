@@ -184,7 +184,7 @@ class SeleccionPartida(arcade.View):
 
     def on_draw(self):
         self.clear()
-        arcade.draw_text("SELECCIONA UNA PARTIDA", self.window.width / 2, self.window.height * 0.85,
+        arcade.draw_text("PARTIDAS GUARDADAS", self.window.width / 2, self.window.height * 0.85,
                          arcade.color.WHITE, font_size=30, anchor_x="center")
         self.manager.draw()
 
@@ -742,9 +742,9 @@ class Nivel1(Nivel):
     def __init__(self):
         super().__init__(numero_nivel=1)
         
-        """# Cargamos el sonido de la vista del nivel 1
-        musica = os.path.join("assets", "musica_niveles", "musica_mapa_niveles.mp3")
-        self.musica_mapa = arcade.load_sound(musica)"""
+        # Cargamos el sonido de la vista del nivel 1
+        musica = os.path.join("assets", "musica_niveles", "musica_nivel_4.mp3")
+        self.musica_mapa = arcade.load_sound(musica)
 
     def setup(self):
         self.victoria = False
@@ -806,6 +806,11 @@ class Nivel1(Nivel):
             self.watergirl, gravity_constant = GRAVITY, walls = muros
         )
 
+    def on_show_view(self):
+        
+        super().on_show_view()  # Esto se asegura de configurar el fondo y llamar a setup()
+        self.musica_actual = arcade.play_sound(self.musica_mapa, volume = self.window.volumen, loop = True)
+
     def on_draw(self):
         self.clear()
 
@@ -857,12 +862,19 @@ class Nivel1(Nivel):
         except (KeyError, TypeError):
             pass
 
+    def on_hide_view(self):
+        arcade.stop_sound(self.musica_actual)
+
 class Nivel2(Nivel):
     def __init__(self):
         super().__init__(numero_nivel=2)
 
         self.objetos_que_caen = None
         self.tiempo_spawn = 0
+
+        # Cargamos el sonido de la vista del nivel 2
+        musica = os.path.join("assets", "musica_niveles", "musica_nivel_5.mp3")
+        self.musica_mapa = arcade.load_sound(musica)
 
     def setup(self):
         self.victoria = False
@@ -937,6 +949,11 @@ class Nivel2(Nivel):
 
         self.objetos_que_caen.append(sprite)
 
+    def on_show_view(self):
+        
+        super().on_show_view()  # Esto se asegura de configurar el fondo y llamar a setup()
+        self.musica_actual = arcade.play_sound(self.musica_mapa, volume = self.window.volumen, loop = True)
+
     def on_draw(self):
         self.clear()
 
@@ -1007,6 +1024,9 @@ class Nivel2(Nivel):
         except (KeyError, TypeError):
             pass
 
+    def on_hide_view(self):
+        arcade.stop_sound(self.musica_actual)
+
 class Nivel3(Nivel):
     def __init__(self):
         super().__init__(numero_nivel=3)
@@ -1029,6 +1049,7 @@ CLASES_NIVELES = {
 
 if __name__ == "__main__":
     window = arcade.Window(SCREEN_WIDTH, SCREEN_HEIGHT, "Juego", resizable=True)
+    window.maximize()
     window.volumen = 0.5
     menu = MenuView()
     window.show_view(menu)
