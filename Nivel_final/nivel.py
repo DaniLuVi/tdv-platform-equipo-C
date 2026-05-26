@@ -125,7 +125,7 @@ class MyGame(arcade.Window):
         try:
             en_puerta1 = arcade.check_for_collision_with_list(self.player_sprite, self.scene["puertachica"])
             en_puerta2 = arcade.check_for_collision_with_list(self.player_sprite2, self.scene["puertachico"])
-            if en_puerta1 and en_puerta2:
+            if len(en_puerta1) and len(en_puerta2):
                 self.victoria = True
         except:
             pass
