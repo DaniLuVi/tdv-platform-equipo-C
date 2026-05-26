@@ -183,13 +183,13 @@ class MyGame(arcade.Window):
 
         self.player_list = arcade.SpriteList()
 
-        self.player_sprite = arcade.Sprite("chica.png", 0.10)
+        self.player_sprite = arcade.Sprite("chica.png", 0.09)
         self.player_sprite.center_x = 80
         self.player_sprite.center_y = 100
 
         self.player_list.append(self.player_sprite)
 
-        self.player_sprite2 = arcade.Sprite("chico.png", 0.10)
+        self.player_sprite2 = arcade.Sprite("chico.png", 0.09)
         self.player_sprite2.center_x = ancho_mapa - 80
         self.player_sprite2.center_y = 100
 
