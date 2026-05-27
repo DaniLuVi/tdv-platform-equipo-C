@@ -12,7 +12,7 @@ Para escoger realizar este juego, nos inspiramos en el juego de Fireboy & Waterg
 
 - Objetivos del proyecto:
 
-Para la realización del videojuego se ha utilizado lenguaje Python, empleando el paradigma imperativo y el paradigma orientado a objetos (POO). Además, se ha implementado la biblioteca Arcade que se requería para la práctica, con una versión 3.0 o superior. 
+Para la realización del videojuego se ha utilizado lenguaje Python, empleando el paradigma imperativo y el paradigma orientado a objetos (POO). Además, se ha implementado la biblioteca Arcade que se requería para la práctica, con la versión 3.3.3. 
 
 Para el desarrollo del código hemos usado Visual Studio Code, para el diseño de niveles usamos la aplicación Tile Map Editor, y también hemos usado otras herramientas para crear nuestros propios personajes.
 
@@ -31,7 +31,7 @@ El programa comienza mostrando una vista inicial llamada MenuView en la que se m
 
 Pasamos a la vista Mapa, con el mapa de niveles. En esta vista se puede ver un fondo ambiente, el camino de niveles a superar en el que se puede ver claramente con la imagen qué nivel ha sido superado, qué nivel no ha sido superado todavía y qué nivel se encuentra bloqueado y no se puede acceder a él. Tambíen se puede ver arriba a la derecha un botón para guardar el progreso de la partida o abajo unos textos con los niveles superados y la forma de volver atrás.
 
-Las vistas de los distintos niveles se muestran con mas detalle en el archivo "gdd.md". La vista del nivel se muestra con el nivel en el centro de la pantalla, dejando dos franjas negras a ambos laterales de la pantalla.
+Las vistas de los distintos niveles se muestran con mas detalle en el archivo "gdd.md". La vista del nivel se muestra con el nivel en el centro de la pantalla, dejando dos franjas negras a ambos laterales de la pantalla. El recuadro del nivel se mantiene encajado en el centro geométrico de la pantalla mediante el uso de una cámara arcade.Camera2D fijada en el centro del escenario, logrando que el espacio restante se rellene automáticamente con franjas negras de forma limpia.
 
 Cuando en un nivel algún personaje muere o se consigue superar el nivel, aparece una vista mostrando la conclusión del intento del nivel y se muestran dos botones:
   1. Un botón de "Reiniciar Nivel"/"Siguiente Nivel" en el que (haciendo click o pulsando ENTER) se reinicia el nivel o se muestra el nivel inmediatemanete posterior
@@ -41,7 +41,7 @@ Cuando en un nivel algún personaje muere o se consigue superar el nivel, aparec
 
 Se ha hecho un uso bastante eficiente de las vistas en Arcade, como se ha podido explicar antes. Además, el código es eficiente y está bien organizado gracias al buen uso de los paradigmas soportados por el lenguaje Python.
 
-Se hace uso de la herencia para los personajes, Sprites y vistas de Arcade, y para los distintos niveles del juego (con una clase Nivel general que define cosas que son comunes para todos los niveles)
+Se hace uso de la herencia para los personajes, Sprites y vistas de Arcade, y para los distintos niveles del juego (con una clase Nivel general que define cosas que son comunes para todos los niveles). Se implementa una clase abstracta Personaje (que hereda de arcade.Sprite) de la cual nacen las subclases Fireboy y Watergirl, polimorfismo que permite gestionar de manera independiente las reglas de supervivencia de cada elemento (inmunidad a lava o agua). De la misma forma, se diseñó una clase base Nivel(arcade.View) que centraliza la lógica común de captación de teclado, actualización de motores físicos y renderizado de la cámara, permitiendo que las clases específicas de cada nivel hereden toda esta infraestructura y solo tengan que encargarse de inicializar su propio mapa TMX.
 
 ## 3. Sistema de guardado y cargado de datos
 
@@ -62,5 +62,7 @@ Un ejemplo de una partida guardada directamente del JSON almacenado pordía ser:
 }
 
 Para el cargado de partidas posterior que ocurre en la vista SeleccionPartida, son mostradas todas las partidas guardadas en distintos botones que se pueden organizar en dos columnas. Al pulsar en cualquiera de esos botones, se carga la vista Mapa con el mapa de niveles en el que se muestre el progreso almacenado de forma efectiva con las imágenes del estado de cada nivel.
+
+Para evitar la saturación visual, la interfaz distribuye dinámicamente los botones mediante contenedores UIBoxLayout. El algoritmo lee los índices de las partidas del JSON mediante un bucle enumerado: las primeras 5 partidas se inyectan en una columna vertical izquierda y las 5 restantes en una columna derecha, manteniendo el diseño perfectamente equilibrado y simétrico en el centro de la pantalla.
 
 ## 4. Dificultades encontradas
