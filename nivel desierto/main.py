@@ -76,7 +76,7 @@ class JuegoDesierto(arcade.Window):
 
         # --- CARGAR TU IMAGEN DE FONDO AQUÍ ---
         # Coloca tu imagen dentro de la carpeta "nivel desierto" junto a tu mapa
-        ruta_fondo = os.path.join("nivel desierto", "tu_imagen_de_fondo.png") 
+        ruta_fondo = os.path.join("nivel desierto", "fondo desierto.png") 
         if os.path.exists(ruta_fondo):
             self.textura_fondo = arcade.load_texture(ruta_fondo)
         else:
