@@ -5,7 +5,7 @@ import os
 # 1. CONFIGURACIÓN INICIAL
 # =========================================================================
 TOTAL_MONEDAS = 12
-ANCHO_VENTANA = 960
+ANCHO_VENTANA = 760
 ALTO_VENTANA = 768
 TITULO_VENTANA = "Nuestro Videojuego - Cooperativo Extremo"
 DIRECTORIO_ACTUAL = os.path.dirname(__file__)
@@ -232,7 +232,7 @@ class JuegoDesierto(arcade.Window):
 
         # Fondo del contador
         arcade.draw_lrbt_rectangle_filled(
-            1735, 2000,
+            1535, 1800,
             1670,   # bottom
             1800,   # top
             arcade.color.GOLDENROD
