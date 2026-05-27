@@ -14,6 +14,9 @@ class JuegoDesierto(arcade.Window):
     def __init__(self):
         super().__init__(ANCHO_VENTANA, ALTO_VENTANA, TITULO_VENTANA, antialiasing=False)
         
+        self.textura_fondo = None
+        self.ancho_mapa = 0
+        self.alto_mapa = 0
         self.tiempo_total = 120  # segundos (ajústalo a lo que quieras)
         self.tiempo_restante = self.tiempo_total
         # Entradas del teclado
@@ -60,15 +63,24 @@ class JuegoDesierto(arcade.Window):
             arcade.exit()
             return
 
-        ancho_mapa = mapa_tiled.width * mapa_tiled.tile_width
-        alto_mapa = mapa_tiled.height * mapa_tiled.tile_height
+        # Modifica esta parte en tu setup():
+        self.ancho_mapa = mapa_tiled.width * mapa_tiled.tile_width
+        self.alto_mapa = mapa_tiled.height * mapa_tiled.tile_height
 
-        # Configurar la cámara para que encaje PERFECTAMENTE el mapa entero
+        # Configurar la cámara usando las nuevas variables con self.
         self.camara = arcade.camera.Camera2D()
-        self.camara.position = (ancho_mapa / 2, alto_mapa / 2)
-        zoom_x = ANCHO_VENTANA / ancho_mapa
-        zoom_y = ALTO_VENTANA / alto_mapa
+        self.camara.position = (self.ancho_mapa / 2, self.alto_mapa / 2)
+        zoom_x = ANCHO_VENTANA / self.ancho_mapa
+        zoom_y = ALTO_VENTANA / self.alto_mapa
         self.camara.zoom = min(zoom_x, zoom_y)
+
+        # --- CARGAR TU IMAGEN DE FONDO AQUÍ ---
+        # Coloca tu imagen dentro de la carpeta "nivel desierto" junto a tu mapa
+        ruta_fondo = os.path.join("nivel desierto", "tu_imagen_de_fondo.png") 
+        if os.path.exists(ruta_fondo):
+            self.textura_fondo = arcade.load_texture(ruta_fondo)
+        else:
+            print(f"Advertencia: No se encontró la imagen de fondo en {ruta_fondo}")
 
         # -----------------------------------------------------------------
         # 3. EXTRAER LAS CAPAS DE TILED
@@ -115,10 +127,10 @@ class JuegoDesierto(arcade.Window):
 
         self.chico = crear_personaje("chico", arcade.color.BLUE) # Controles WASD
         self.chico.center_x = 150
-        self.chico.center_y = alto_mapa - 150
+        self.chico.center_y = self.alto_mapa - 150
 
         self.chica = crear_personaje("chica", arcade.color.RED) # Controles Flechas
-        self.chica.center_x = ancho_mapa - 300
+        self.chica.center_x = self.ancho_mapa - 300
         self.chica.center_y = 400
 
         self.lista_jugadores.append(self.chico)
