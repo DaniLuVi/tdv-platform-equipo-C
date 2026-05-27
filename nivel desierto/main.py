@@ -4,7 +4,8 @@ import os
 # =========================================================================
 # 1. CONFIGURACIÓN INICIAL
 # =========================================================================
-ANCHO_VENTANA = 1024
+TOTAL_MONEDAS = 12
+ANCHO_VENTANA = 960
 ALTO_VENTANA = 768
 TITULO_VENTANA = "Nuestro Videojuego - Cooperativo Extremo"
 DIRECTORIO_ACTUAL = os.path.dirname(__file__)
@@ -13,6 +14,8 @@ class JuegoDesierto(arcade.Window):
     def __init__(self):
         super().__init__(ANCHO_VENTANA, ALTO_VENTANA, TITULO_VENTANA, antialiasing=False)
         
+        self.tiempo_total = 120  # segundos (ajústalo a lo que quieras)
+        self.tiempo_restante = self.tiempo_total
         # Entradas del teclado
         self.teclas_pulsadas = set()
 
@@ -39,6 +42,7 @@ class JuegoDesierto(arcade.Window):
         self.chico_en_meta = False
         self.chica_en_meta = False
         self.juego_terminado = False
+        self.contador_monedas = 0
 
     def setup(self):
         """ Configura el juego y carga los recursos """
@@ -137,6 +141,8 @@ class JuegoDesierto(arcade.Window):
     def on_update(self, delta_time):
         if self.juego_terminado:
             return 
+        
+        self.tiempo_restante -= delta_time
 
         # --- Controles del Chico (WASD) ---
         self.chico.change_x = 0
@@ -167,10 +173,15 @@ class JuegoDesierto(arcade.Window):
             monedas_tocadas = arcade.check_for_collision_with_list(jugador, self.monedas)
             for moneda in monedas_tocadas:
                 moneda.remove_from_sprite_lists()
+                self.contador_monedas += 1
 
         # -----------------------------------------------------------------
-        # LÓGICA 2: REGLAS DE SUPERVIVENCIA (Agua, Lava y Veneno)
+        # LÓGICA 2: REGLAS DE SUPERVIVENCIA (Agua, Lava, Veneno y Tiempo)
         # -----------------------------------------------------------------
+        if self.tiempo_restante <= 0:
+            self.tiempo_restante = 0
+            self.juego_terminado = True
+            print("¡GAME OVER! Se acabó el tiempo.")
         # REGLA 1: Si la chica toca el AGUA -> GAME OVER
         if arcade.check_for_collision_with_list(self.chica, self.agua):
             self.juego_terminado = True
@@ -193,7 +204,10 @@ class JuegoDesierto(arcade.Window):
         self.chico_en_meta = bool(arcade.check_for_collision_with_list(self.chico, self.puerta_chico))
         self.chica_en_meta = bool(arcade.check_for_collision_with_list(self.chica, self.puerta_chica))
 
-        if self.chico_en_meta and self.chica_en_meta:
+        if (self.chico_en_meta and 
+            self.chica_en_meta and 
+            self.contador_monedas >= TOTAL_MONEDAS):
+
             self.juego_terminado = True
             print("¡VICTORIA COOPERATIVA!")
 
@@ -201,20 +215,69 @@ class JuegoDesierto(arcade.Window):
     # DIBUJO
     # =========================================================================
     def on_draw(self):
-        self.clear() 
-        self.camara.use() 
-        
-        self.escena.draw()       # Dibuja el mapa de Tiled completo
-        self.lista_jugadores.draw() # Dibuja los personajes encima
+        self.clear()
 
-        # Mostrar carteles finales si el juego ha terminado
+        # -------------------------------
+        # DIBUJAR EL MUNDO DEL JUEGO
+        # -------------------------------
+        self.camara.use()
+
+        self.escena.draw()
+        self.lista_jugadores.draw()
+
+        # -------------------------------
+        # DIBUJAR LA INTERFAZ (HUD)
+        # -------------------------------
+        self.use()
+
+        # Fondo del contador
+        arcade.draw_lrbt_rectangle_filled(
+            1735, 2000,
+            1670,   # bottom
+            1800,   # top
+            arcade.color.GOLDENROD
+        )
+
+        arcade.draw_text(
+            f"Monedas: {self.contador_monedas}",
+            ANCHO_VENTANA + 800,
+            ALTO_VENTANA + 975,
+            arcade.color.BLACK,
+            34,
+            bold=True,
+        )
+        arcade.draw_text(
+            f"Tiempo: {int(self.tiempo_restante)}",
+            ANCHO_VENTANA + 800,
+            ALTO_VENTANA + 930,
+            arcade.color.BLACK,
+            34,
+            bold=True,
+        )
+        
+
+        # -------------------------------
+        # MENSAJES FINALES
+        # -------------------------------
         if self.juego_terminado:
             if self.chico_en_meta and self.chica_en_meta:
-                arcade.draw_text("¡VICTORIA!", ANCHO_VENTANA / 2, ALTO_VENTANA / 2,
-                                 arcade.color.GOLDENROD, font_size=50, anchor_x="center")
+                arcade.draw_text(
+                    "¡VICTORIA!",
+                    ANCHO_VENTANA / 2,
+                    ALTO_VENTANA / 2,
+                    arcade.color.GOLDENROD,
+                    font_size=50,
+                    anchor_x="center"
+            )
             else:
-                arcade.draw_text("GAME OVER", ANCHO_VENTANA / 2, ALTO_VENTANA / 2,
-                                 arcade.color.RED, font_size=50, anchor_x="center")
+                arcade.draw_text(
+                    "GAME OVER",
+                    ANCHO_VENTANA / 2,
+                    ALTO_VENTANA / 2,
+                    arcade.color.RED,
+                    font_size=50,
+                    anchor_x="center"
+                )
 
 
 if __name__ == "__main__":
