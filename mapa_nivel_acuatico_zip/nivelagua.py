@@ -6,7 +6,7 @@ import os
 # ---------------------------------------------------
 
 SCREEN_WIDTH = 768
-SCREEN_HEIGHT = 772
+SCREEN_HEIGHT = 774
 SCREEN_TITLE = "Nivel Acuático – Arcade"
 
 GRAVITY = 1.0
@@ -71,6 +71,12 @@ class MyGame(arcade.Window):
 
         # segundos de pausa
         self.tiempo_pausa = 2
+        
+        # ---------------------------------------------------
+        # VICTORIA
+        # ---------------------------------------------------
+
+        self.victoria = False
 
     # ---------------------------------------------------
     # SETUP
@@ -253,11 +259,47 @@ class MyGame(arcade.Window):
 
         self.player_list.draw()
 
+        # ---------------------------------------------------
+        # MENSAJE VICTORIA
+        # ---------------------------------------------------
+
+        if self.victoria:
+
+            arcade.draw_lrbt_rectangle_filled(
+            SCREEN_WIDTH / 2 - 250,
+            SCREEN_WIDTH / 2 + 250,
+            SCREEN_HEIGHT / 2 - 110,
+            SCREEN_HEIGHT / 2 + 110,
+            (0, 0, 0, 180)
+        )
+
+            arcade.draw_text(
+                "¡VICTORIA COOPERATIVA!",
+                SCREEN_WIDTH / 2,
+                SCREEN_HEIGHT / 2 + 30,
+                arcade.color.GOLD,
+                32,
+                anchor_x="center",
+                bold=True
+            )
+
+            arcade.draw_text(
+                "Pulsa R para reiniciar",
+                SCREEN_WIDTH / 2,
+                SCREEN_HEIGHT / 2 - 60,
+                arcade.color.WHITE,
+                18,
+                anchor_x="center"
+            )
+
     # ---------------------------------------------------
     # UPDATE
     # ---------------------------------------------------
 
     def on_update(self, delta_time):
+        
+        if self.victoria:
+            return
 
         # actualizar físicas
         self.physics_engine.update()
@@ -402,7 +444,17 @@ class MyGame(arcade.Window):
         )
 
         if chica_ok and chico_ok:
-            print("¡NIVEL COMPLETADO!")
+
+            self.victoria = True
+
+            # parar personajes
+            self.player_sprite.change_x = 0
+            self.player_sprite.change_y = 0
+
+            self.player_sprite2.change_x = 0
+            self.player_sprite2.change_y = 0
+
+        return
 
     # ---------------------------------------------------
     # TECLAS PRESIONADAS
@@ -439,6 +491,12 @@ class MyGame(arcade.Window):
         elif key == arcade.key.D:
 
             self.player_sprite2.change_x = PLAYER_MOVEMENT_SPEED
+            
+        # reiniciar
+        if key == arcade.key.R and self.victoria:
+
+            self.victoria = False
+            self.setup()
 
     # ---------------------------------------------------
     # SOLTAR TECLAS
@@ -453,6 +511,7 @@ class MyGame(arcade.Window):
         # chico
         if key in (arcade.key.A, arcade.key.D):
             self.player_sprite2.change_x = 0
+
 
 
 # ---------------------------------------------------
