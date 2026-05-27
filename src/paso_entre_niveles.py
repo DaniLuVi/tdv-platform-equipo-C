@@ -688,6 +688,32 @@ class Watergirl(Personaje):
     def es_seguro(self, tipo):
         return tipo == AGUA
 
+class Piraña(arcade.Sprite):
+    def __init__(self, x, y, muros):
+        super().__init__(os.path.join("assets", "piraña.png"), scale=0.1)
+
+        self.center_x = x
+        self.center_y = y
+        self.change_x = 3  # Velocidad de nado
+        self.muros = muros
+
+    def update(self):
+        # Movemos la piraña
+        self.center_x += self.change_x
+        
+        # Comprobamos si se ha chocado con alguna pared
+        if arcade.check_for_collision_with_list(self, self.muros):
+            # Si choca, retrocedemos un paso
+            self.center_x -= self.change_x
+            # Y cambiamos la dirección
+            self.change_x *= -1
+    
+            if self.change_x < 0:
+                self.texture = arcade.load_texture(os.path.join("assets", "pirana.png"), flipped_horizontally=True)
+            else:
+                self.texture = arcade.load_texture(os.path.join("assets", "pirana.png"))
+
+
 class Nivel(arcade.View):
     """
     Vista del nivel.

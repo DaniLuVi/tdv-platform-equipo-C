@@ -13,6 +13,38 @@ GRAVITY = 1.0
 PLAYER_MOVEMENT_SPEED = 5
 PLAYER_JUMP_SPEED = 18
 
+class Piraña(arcade.Sprite):
+    def __init__(self, x, y, muros):
+        super().__init__()
+
+        self.textura_izq = arcade.load_texture(os.path.join("assets", "piraña.png"))
+        self.textura_der = self.textura_izq.flip_left_right()
+        
+        self.texture = self.textura_der 
+        self.scale = 0.15
+
+        self.center_x = x
+        self.center_y = y
+        self.change_x = 3  # Velocidad de nado
+        self.muros = muros
+
+    def update(self, delta_time):
+        # Movemos la piraña
+        self.center_x += self.change_x
+        
+        # Comprobamos si se ha chocado con alguna pared
+        if arcade.check_for_collision_with_list(self, self.muros):
+
+            if len(self.muros) > 0:
+                # Si choca, retrocedemos un paso
+                self.center_x -= self.change_x
+                # Y cambiamos la dirección
+                self.change_x *= -1
+    
+            if self.change_x < 0:
+                self.texture = self.textura_izq
+            else:
+                self.texture = self.textura_der
 
 class MyGame(arcade.Window):
 
@@ -208,6 +240,19 @@ class MyGame(arcade.Window):
         paredes = self.agua_solido_list
 
         # ---------------------------------------------------
+        # ENEMIGOS
+        # ---------------------------------------------------
+        
+        self.lista_enemigos = arcade.SpriteList()
+        pirana1 = Piraña(x=450, y=250, muros=paredes)
+        pirana2 = Piraña(x=300, y=250, muros=paredes)
+        pirana3 = Piraña(x=400, y=500, muros=paredes)
+        
+        self.lista_enemigos.append(pirana1)
+        self.lista_enemigos.append(pirana2)
+        self.lista_enemigos.append(pirana3)
+
+        # ---------------------------------------------------
         # FÍSICA
         # ---------------------------------------------------
 
@@ -258,6 +303,7 @@ class MyGame(arcade.Window):
             self.puerta_chica.draw()
 
         self.player_list.draw()
+        self.lista_enemigos.draw()
 
         # ---------------------------------------------------
         # MENSAJE VICTORIA
@@ -304,7 +350,12 @@ class MyGame(arcade.Window):
         # actualizar físicas
         self.physics_engine.update()
         self.physics_engine2.update()
+        self.lista_enemigos.update()
 
+        for pirana in self.lista_enemigos:
+            if arcade.check_for_collision(pirana, self.player_sprite) or arcade.check_for_collision(pirana, self.player_sprite2):
+                self.setup()  # Reiniciar el nivel
+                return
         # ---------------------------------------------------
         # PLATAFORMAS CON PAUSAS
         # ---------------------------------------------------
