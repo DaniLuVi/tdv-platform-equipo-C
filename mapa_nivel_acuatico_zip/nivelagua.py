@@ -25,7 +25,7 @@ class Piraña(arcade.Sprite):
 
         self.center_x = x
         self.center_y = y
-        self.change_x = 3  # Velocidad de nado
+        self.change_x = 5  # Velocidad de nado
         self.muros = muros
 
     def update(self, delta_time):
