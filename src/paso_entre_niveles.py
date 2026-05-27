@@ -690,28 +690,36 @@ class Watergirl(Personaje):
 
 class Piraña(arcade.Sprite):
     def __init__(self, x, y, muros):
-        super().__init__(os.path.join("assets", "piraña.png"), scale=0.1)
+        super().__init__()
+
+        self.textura_izq = arcade.load_texture(os.path.join("assets", "piraña.png"))
+        self.textura_der = self.textura_izq.flip_left_right()
+        
+        self.texture = self.textura_der 
+        self.scale = 0.15
 
         self.center_x = x
         self.center_y = y
-        self.change_x = 3  # Velocidad de nado
+        self.change_x = 5  # Velocidad de nado
         self.muros = muros
 
-    def update(self):
+    def update(self, delta_time):
         # Movemos la piraña
         self.center_x += self.change_x
         
         # Comprobamos si se ha chocado con alguna pared
         if arcade.check_for_collision_with_list(self, self.muros):
-            # Si choca, retrocedemos un paso
-            self.center_x -= self.change_x
-            # Y cambiamos la dirección
-            self.change_x *= -1
+
+            if len(self.muros) > 0:
+                # Si choca, retrocedemos un paso
+                self.center_x -= self.change_x
+                # Y cambiamos la dirección
+                self.change_x *= -1
     
             if self.change_x < 0:
-                self.texture = arcade.load_texture(os.path.join("assets", "pirana.png"), flipped_horizontally=True)
+                self.texture = self.textura_izq
             else:
-                self.texture = arcade.load_texture(os.path.join("assets", "pirana.png"))
+                self.texture = self.textura_der
 
 
 class Nivel(arcade.View):
@@ -1057,13 +1065,391 @@ class Nivel3(Nivel):
     def __init__(self):
         super().__init__(numero_nivel=3)
 
+        # Cargamos el sonido de la vista del nivel 3
+        musica = os.path.join("assets", "musica_niveles", "musica_nivel_6.mp3")
+        self.musica_mapa = arcade.load_sound(musica)
+
+        self.velocidad_plataformas = 2
+        self.altura_minima = 0
+        self.altura_maxima = 0
+        self.estado_plataformas = "esperando_arriba"
+        self.contador_pausa = 0
+        self.tiempo_pausa = 2
+
+    def setup(self):
+        mapa = os.path.join("mapa_nivel_acuatico_zip", "nivel_acuatico.tmx")
+
+        layer_options = {
+            "capa_agua_solido": {"use_spatial_hash": True},
+            "capa_veneno": {"use_spatial_hash": True},
+            "capa_plataforma_movil": {"use_spatial_hash": True},
+        }
+
+        try:
+            mapa_temp = arcade.load_tilemap(mapa)
+            escala_auto = self.alto_logico / (mapa_temp.height * mapa_temp.tile_height)
+            tile_map = arcade.load_tilemap(mapa, scaling=escala_auto, layer_options=layer_options)
+            self.scene = arcade.Scene.from_tilemap(tile_map)
+        except Exception as e:
+            print(f"Error cargando TMX Nivel 3: {e}")
+            self.scene = None
+            return
+
+        plataformas = arcade.SpriteList()
+        if "capa_plataforma_movil" in self.scene:
+            plataformas = self.scene["capa_plataforma_movil"]
+
+        # Límites plataformas móviles
+        if len(plataformas) > 0:
+            self.altura_maxima = plataformas[0].bottom
+            self.altura_minima = self.altura_maxima - 102
+
+        # Jugadores
+        self.fireboy = Fireboy()
+        self.fireboy.texture = arcade.load_texture("chico.png")
+        self.fireboy.scale = 0.08
+        self.fireboy.center_x = self.ancho_logico - 80
+        self.fireboy.center_y = 100
+        self.scene.add_sprite("Fireboy", self.fireboy)
+
+        self.watergirl = Watergirl()
+        self.watergirl.texture = arcade.load_texture("chica.png")
+        self.watergirl.scale = 0.08
+        self.watergirl.center_x = 80
+        self.watergirl.center_y = 100
+        self.scene.add_sprite("Watergirl", self.watergirl)
+
+        # Muros y Física
+        muros = arcade.SpriteList()
+        if "capa_agua_solido" in self.scene:
+            muros = self.scene["capa_agua_solido"]
+
+        self.fireboy.physics_engine = arcade.PhysicsEnginePlatformer(
+            self.fireboy, walls=muros, platforms=plataformas, gravity_constant=GRAVITY
+        )
+        self.watergirl.physics_engine = arcade.PhysicsEnginePlatformer(
+            self.watergirl, walls=muros, platforms=plataformas, gravity_constant=GRAVITY
+        )
+
+        # Enemigos
+        self.lista_enemigos = arcade.SpriteList()
+        pirana1 = Piraña(x=450, y=250, muros=muros)
+        pirana2 = Piraña(x=300, y=250, muros=muros)
+        pirana3 = Piraña(x=400, y=500, muros=muros)
+        
+        self.lista_enemigos.append(pirana1)
+        self.lista_enemigos.append(pirana2)
+        self.lista_enemigos.append(pirana3)
+
+    def on_show_view(self):
+        super().on_show_view()  
+        self.musica_actual = arcade.play_sound(self.musica_mapa, volume = self.window.volumen, loop = True)
+
+    def on_draw(self):
+        self.clear()
+
+        with self.camera.activate():
+            fondo = arcade.rect.LBWH(0, 0, self.ancho_logico, self.alto_logico)
+            arcade.draw_rect_filled(fondo, arcade.color.OCEAN_BOAT_BLUE)
+            
+            if self.scene:
+                self.scene.draw()
+            self.lista_enemigos.draw()
+
+    def on_update(self, delta_time):
+        if not self.scene:
+            return
+
+        self.fireboy.physics_engine.update()
+        self.watergirl.physics_engine.update()
+        self.lista_enemigos.update()
+
+        # Colisiones entre los personajes
+        if arcade.check_for_collision(self.fireboy, self.watergirl):
+            self.window.show_view(NivelPerdido(self.numero_nivel))
+            return
+        
+        # Colisiones con enemigos
+        for pirana in self.lista_enemigos:
+            if arcade.check_for_collision(pirana, self.fireboy) or arcade.check_for_collision(pirana, self.watergirl):
+                self.window.show_view(NivelPerdido(self.numero_nivel))
+                return
+            
+        # Plataformas Móviles
+        plataformas_sprites = arcade.SpriteList()
+        if "capa_plataforma_movil" in self.scene:
+            plataformas_sprites = self.scene["capa_plataforma_movil"]
+        if plataformas_sprites:
+            if self.estado_plataformas == "esperando_arriba":
+
+                self.contador_pausa += delta_time
+
+                if self.contador_pausa >= self.tiempo_pausa:
+
+                    self.contador_pausa = 0
+                    self.estado_plataformas = "bajando"
+
+            elif self.estado_plataformas == "bajando":
+
+                for plataforma in plataformas_sprites:
+                    plataforma.center_y -= self.velocidad_plataformas
+
+                if (plataformas_sprites[0].bottom <= self.altura_minima):
+                    self.estado_plataformas = "esperando_abajo"
+
+            elif self.estado_plataformas == "esperando_abajo":
+
+                self.contador_pausa += delta_time
+                if self.contador_pausa >= self.tiempo_pausa:
+
+                    self.contador_pausa = 0
+                    self.estado_plataformas = "subiendo"
+
+            elif self.estado_plataformas == "subiendo":
+
+                for plataforma in plataformas_sprites:
+                    plataforma.center_y += self.velocidad_plataformas
+
+                if (plataformas_sprites[0].bottom >= self.altura_maxima):
+                    self.estado_plataformas = "esperando_arriba"
+
+        # Colisiones de muerte por zonas peligrosas
+        capas_muerte_water = ["capa_agua_estela", "capa_veneno"]
+        capas_muerte_fire = ["capa_fuego_galaxi", "capa_veneno"]
+
+        for jugador, capas in [(self.fireboy, capas_muerte_fire), (self.watergirl, capas_muerte_water)]:
+            for nombre in capas:
+                try:
+                    if arcade.check_for_collision_with_list(jugador, self.scene[nombre]):
+                        self.window.show_view(NivelPerdido(self.numero_nivel))
+                        return
+                except (KeyError, TypeError): pass
+
+        # Victoria
+        try:
+            en_puerta_fire = arcade.check_for_collision_with_list(self.fireboy, self.scene["puerta_chico_acuatico"])
+            en_puerta_water = arcade.check_for_collision_with_list(self.watergirl, self.scene["puerta_chica_acuatico"])
+            if en_puerta_fire and en_puerta_water:
+                self.window.show_view(NivelConseguido(self.numero_nivel))
+        except (KeyError, TypeError): 
+            pass
+
+    def on_hide_view(self):
+        arcade.stop_sound(self.musica_actual)
+
 class Nivel4(Nivel):
     def __init__(self):
         super().__init__(numero_nivel=4)
 
+        # Cargamos el sonido de la vista del nivel 4
+        musica = os.path.join("assets", "musica_niveles", "musica_nivel_2.mp3")
+        self.musica_mapa = arcade.load_sound(musica)
+
+        self.victoria = False
+
+    def on_show_view(self):
+        super().on_show_view()  
+        self.musica_actual = arcade.play_sound(self.musica_mapa, volume = self.window.volumen, loop = True)
+
+    def on_hide_view(self):
+        arcade.stop_sound(self.musica_actual)
+
 class Nivel5(Nivel):
     def __init__(self):
         super().__init__(numero_nivel=5)
+
+        # Cargamos el sonido de la vista del nivel 5
+        musica = os.path.join("assets", "musica_niveles", "musica_nivel_castillo.mp3")
+        self.musica_mapa = arcade.load_sound(musica)
+
+        self.palanca_activada = False
+        self.victoria = False
+
+    def setup(self):
+        self.victoria = False
+        self.palanca_activada = False
+
+        mapa = os.path.join("Nivel final", "nivel_final.tmx")
+
+        layer_options = {
+            "Capa de patrones 1": {"use_spatial_hash": True},
+            "veneno": {"use_spatial_hash": True},
+            "lava": {"use_spatial_hash": True},
+            "agua": {"use_spatial_hash": True},
+            "puertachica": {"use_spatial_hash": True},
+            "puertachico": {"use_spatial_hash": True},
+            "boton1": {"use_spatial_hash": True},
+            "boton2": {"use_spatial_hash": True},
+            "palanca": {"use_spatial_hash": True},
+            "palancaactiva": {"use_spatial_hash": True},
+            "muro1": {"use_spatial_hash": True},
+            "muro2": {"use_spatial_hash": True},
+            "muro3": {"use_spatial_hash": True},
+        }
+
+        try:
+            mapa_temp = arcade.load_tilemap(mapa)
+            escala_auto = self.alto_logico / (mapa_temp.height * mapa_temp.tile_height)
+            tile_map = arcade.load_tilemap(mapa, scaling=escala_auto, layer_options=layer_options)
+            self.scene = arcade.Scene.from_tilemap(tile_map)
+        except Exception as e:
+            print(f"Error cargando TMX Nivel 3: {e}")
+            self.scene = None
+            return
+
+        # Guardar posiciones originales de muros
+        for nombre in ["muro1", "muro2", "muro3"]:
+            if nombre in self.scene:
+                for muro in self.scene[nombre]:
+                    muro.original_x = muro.center_x
+                    muro.original_y = muro.center_y
+
+        if "palancaactiva" in self.scene:
+            for s in self.scene["palancaactiva"]: 
+                s.visible = False
+
+        # Personajes
+        self.fireboy = Fireboy()
+        self.fireboy.texture = arcade.load_texture("chico.png")
+        self.fireboy.scale = 0.07
+        self.fireboy.center_x = 700
+        self.fireboy.center_y = 750
+        self.scene.add_sprite("Fireboy", self.fireboy)
+
+        self.watergirl = Watergirl()
+        self.watergirl.texture = arcade.load_texture("chica.png")
+        self.watergirl.scale = 0.07
+        self.watergirl.center_x = 150
+        self.watergirl.center_y = 750
+        self.scene.add_sprite("Watergirl", self.watergirl)
+
+        # Muros físicos
+        muros = arcade.SpriteList()
+        for nombre in ["Capa de patrones 1", "muro1", "muro2", "muro3"]:
+            if nombre in self.scene:
+                for sprite in self.scene[nombre]:
+                    muros.append(sprite)
+
+        self.fireboy.physics_engine = arcade.PhysicsEnginePlatformer(
+            self.fireboy, gravity_constant=GRAVITY, walls=muros
+        )
+        self.watergirl.physics_engine = arcade.PhysicsEnginePlatformer(
+            self.watergirl, gravity_constant=GRAVITY, walls=muros
+        )
+
+    def on_show_view(self):
+        super().on_show_view()  
+        self.musica_actual = arcade.play_sound(self.musica_mapa, volume = self.window.volumen, loop = True)
+
+    def on_draw(self):
+        self.clear()
+
+        with self.camera.activate():
+            fondo = arcade.rect.LBWH(0, 0, self.ancho_logico, self.alto_logico)
+            arcade.draw_rect_filled(fondo, arcade.color.EERIE_BLACK)
+            
+            if self.scene:
+                self.scene.draw()
+
+    def on_update(self, delta_time):
+        if self.victoria:
+            return 
+        
+        self.fireboy.physics_engine.update()
+        self.watergirl.physics_engine.update()
+
+        # Colisiones entre los personajes
+        if arcade.check_for_collision(self.fireboy, self.watergirl):
+            self.window.show_view(NivelPerdido(self.numero_nivel))
+            return
+        
+        # Colisiones de muerte por zonas peligrosas
+        capas_muerte_water = ["veneno", "agua"]
+        capas_muerte_fire = ["veneno", "lava"]
+
+        for jugador, capas in [(self.fireboy, capas_muerte_fire),
+                               (self.watergirl, capas_muerte_water)]:
+            for nombre in capas:
+                if nombre in self.scene:
+                    if arcade.check_for_collision_with_list(jugador, self.scene[nombre]):
+                        self.window.show_view(NivelPerdido(self.numero_nivel))
+                        return
+
+        # Botón 1
+        try:
+            tocando_boton1 = (
+                arcade.check_for_collision_with_list(self.fireboy, self.scene["boton1"]) or
+                arcade.check_for_collision_with_list(self.watergirl, self.scene["boton1"])
+            )
+        except:
+            tocando_boton1 = False
+
+        if "muro1" in self.scene:
+            for muro in self.scene["muro1"]:
+                if tocando_boton1:
+                    muro.center_x = -10000
+                    muro.center_y = -10000
+                else:
+                    muro.center_x = muro.original_x
+                    muro.center_y = muro.original_y
+
+        # Botón 2
+        try:
+            tocando_boton2 = (
+                arcade.check_for_collision_with_list(self.fireboy, self.scene["boton2"]) or
+                arcade.check_for_collision_with_list(self.watergirl, self.scene["boton2"])
+            )
+        except:
+            tocando_boton2 = False
+
+        if "muro2" in self.scene:
+            for muro in self.scene["muro2"]:
+                if tocando_boton2:
+                    muro.center_x = -10000
+                    muro.center_y = -10000
+                else:
+                    muro.center_x = muro.original_x
+                    muro.center_y = muro.original_y
+
+        # Palanca
+        try:
+            if not self.palanca_activada:
+                tocando_palanca = (
+                    arcade.check_for_collision_with_list(self.fireboy, self.scene["palanca"]) or
+                    arcade.check_for_collision_with_list(self.watergirl, self.scene["palanca"])
+                )
+            else:
+                tocando_palanca = False
+        except:
+            tocando_palanca = False
+
+        if tocando_palanca:
+            self.palanca_activada = True
+
+        if self.palanca_activada:
+            if "palancaactiva" in self.scene:
+                self.scene["palancaactiva"].visible = True
+
+            if "palanca" in self.scene:
+                self.scene["palanca"].visible = False
+
+            if "muro3" in self.scene:
+                for muro in self.scene["muro3"]:
+                    muro.center_x = -10000
+                    muro.center_y = -10000
+
+        # Victoria
+        try:
+            en_puerta1 = arcade.check_for_collision_with_list(self.watergirl, self.scene["puertachica"])
+            en_puerta2 = arcade.check_for_collision_with_list(self.fireboy, self.scene["puertachico"])
+            if len(en_puerta1) and len(en_puerta2):
+                self.victoria = True
+                self.window.show_view(NivelConseguido(self.numero_nivel))
+        except:
+            pass
+
+    def on_hide_view(self):
+        arcade.stop_sound(self.musica_actual)
 
 CLASES_NIVELES = {
     1: Nivel1,
