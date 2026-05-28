@@ -130,7 +130,7 @@ class JuegoDesierto(arcade.Window):
         self.chico.center_y = self.alto_mapa - 150
 
         self.chica = crear_personaje("chica", arcade.color.RED) # Controles Flechas
-        self.chica.center_x = self.ancho_mapa - 300
+        self.chica.center_x = self.ancho_mapa - 150
         self.chica.center_y = 400
 
         self.lista_jugadores.append(self.chico)
@@ -177,6 +177,22 @@ class JuegoDesierto(arcade.Window):
         # Aplicar movimientos y gravedades
         self.motor_chico.update()
         self.motor_chica.update()
+        # -----------------------------------------------------------------
+        # NUEVO: LÍMITES DE PANTALLA/MAPA PARA LOS PERSONAJES
+        # -----------------------------------------------------------------
+        for jugador in [self.chico, self.chica]:
+            # Límite Izquierdo
+            if jugador.left < 0:
+                jugador.left = 0
+            # Límite Derecho
+            elif jugador.right > self.ancho_mapa:
+                jugador.right = self.ancho_mapa
+                
+            # Opcional: Límite Inferior y Superior (por si caen al vacío o saltan muy alto)
+            if jugador.bottom < 0:
+                jugador.bottom = 0
+            elif jugador.top > self.alto_mapa:
+                jugador.top = self.alto_mapa
 
         # -----------------------------------------------------------------
         # LÓGICA 1: RECOGER MONEDAS
