@@ -23,6 +23,29 @@ Sin embargo, esta ventaja también implica importantes debilidades:
 
 Estas características obligan al jugador a analizar cuidadosamente el entorno antes de avanzar, evitando zonas incompatibles con las habilidades de Galaxy.
 
+
+## Controles
+
+El personaje se controla mediante las flechas de dirección del teclado:
+
+| Tecla | Acción |
+|-------|---------|
+| ⬅️ | Desplazarse hacia la izquierda |
+| ➡️ | Desplazarse hacia la derecha |
+| ⬆️ | Saltar |
+
+Los controles han sido diseñados para ofrecer un movimiento fluido y preciso, especialmente en secciones de plataformas y saltos complejos.
+
+## Rol dentro de la jugabilidad
+
+Galaxy será esencial en niveles donde existan:
+- Ríos de lava.
+- Plataformas incendiadas.
+- Interruptores rodeados de fuego.
+- Caminos inaccesibles para Stella.
+
+El jugador deberá utilizar sus habilidades para desbloquear caminos, activar mecanismos o ayudar a Stella
+
 # Stella (Chica / Roja)
 
 Stella es una de las protagonistas principales del videojuego. Representa el elemento agua y destaca por su capacidad para atravesar escenarios acuáticos y zonas inundadas sin sufrir daño.
@@ -61,28 +84,6 @@ Stella será esencial en niveles donde existan:
 - Caminos inundados inaccesibles para Galaxy.
 
 El jugador deberá utilizar sus habilidades para activar mecanismos, desbloquear rutas seguras y ayudar a Galaxy a avanzar a través de los distintos escenarios del juego.
-
-## Controles
-
-El personaje se controla mediante las flechas de dirección del teclado:
-
-| Tecla | Acción |
-|-------|---------|
-| ⬅️ | Desplazarse hacia la izquierda |
-| ➡️ | Desplazarse hacia la derecha |
-| ⬆️ | Saltar |
-
-Los controles han sido diseñados para ofrecer un movimiento fluido y preciso, especialmente en secciones de plataformas y saltos complejos.
-
-## Rol dentro de la jugabilidad
-
-Galaxy será esencial en niveles donde existan:
-- Ríos de lava.
-- Plataformas incendiadas.
-- Interruptores rodeados de fuego.
-- Caminos inaccesibles para Stella.
-
-El jugador deberá utilizar sus habilidades para desbloquear caminos, activar mecanismos o ayudar a Stella
 
 # 2. Mecánicas de Juego (Gameplay)
 
