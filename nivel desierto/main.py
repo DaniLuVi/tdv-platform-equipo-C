@@ -120,9 +120,9 @@ class JuegoDesierto(arcade.Window):
             if os.path.exists(ruta):
                 sprite = arcade.Sprite(ruta)
             else:
-                sprite = arcade.SpriteSolidColor(96, 144, color_error)
-            sprite.width = 96
-            sprite.height = 144
+                sprite = arcade.SpriteSolidColor(64, 96, color_error)
+            sprite.width = 64
+            sprite.height = 96
             return sprite
 
         self.chico = crear_personaje("chico", arcade.color.BLUE) # Controles WASD

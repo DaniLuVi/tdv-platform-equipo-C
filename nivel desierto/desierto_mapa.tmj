@@ -342,7 +342,7 @@
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.12.1",
- "tileheight":60,
+ "tileheight":64,
  "tilesets":[
         {
          "columns":1,
@@ -451,7 +451,7 @@
          "firstgid":916,
          "source":"..\/..\/..\/mapa videojuego\/agua.tsx"
         }],
- "tilewidth":60,
+ "tilewidth":64,
  "type":"map",
  "version":"1.10",
  "width":30
