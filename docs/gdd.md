@@ -23,6 +23,45 @@ Sin embargo, esta ventaja también implica importantes debilidades:
 
 Estas características obligan al jugador a analizar cuidadosamente el entorno antes de avanzar, evitando zonas incompatibles con las habilidades de Galaxy.
 
+# Stella (Chica / Roja)
+
+Stella es una de las protagonistas principales del videojuego. Representa el elemento agua y destaca por su capacidad para atravesar escenarios acuáticos y zonas inundadas sin sufrir daño.
+
+Su apariencia está asociada al color rojo y está diseñada para acceder a lugares imposibles para Galaxy. Gracias a sus habilidades, Stella puede activar mecanismos submarinos y abrir caminos seguros en niveles con gran presencia de agua.
+
+## Propiedades y habilidades
+
+Stella posee inmunidad total al agua, por lo que puede caminar, nadar y desplazarse por superficies acuáticas sin sufrir ningún tipo de daño.
+
+Sin embargo, esta ventaja también implica importantes debilidades:
+- El contacto con lava provoca su muerte instantánea.
+- Los charcos de veneno morado también son letales.
+- Si cae en zonas volcánicas o toca superficies ardientes diseñadas como peligrosas, el jugador deberá reiniciar desde el último punto de control.
+
+Estas características obligan al jugador a planificar cuidadosamente cada movimiento, evitando zonas incompatibles con las habilidades de Stella.
+
+## Controles
+
+El personaje se controla mediante las teclas W, A y D del teclado:
+
+| Tecla | Acción |
+|-------|---------|
+| A | Desplazarse hacia la izquierda |
+| D | Desplazarse hacia la derecha |
+| W | Saltar |
+
+Los controles han sido diseñados para ofrecer un movimiento preciso y dinámico, especialmente en niveles con plataformas móviles y zonas acuáticas.
+
+## Rol dentro de la jugabilidad
+
+Stella será esencial en niveles donde existan:
+- Grandes masas de agua.
+- Plataformas sumergidas.
+- Interruptores acuáticos.
+- Caminos inundados inaccesibles para Galaxy.
+
+El jugador deberá utilizar sus habilidades para activar mecanismos, desbloquear rutas seguras y ayudar a Galaxy a avanzar a través de los distintos escenarios del juego.
+
 ## Controles
 
 El personaje se controla mediante las flechas de dirección del teclado:
