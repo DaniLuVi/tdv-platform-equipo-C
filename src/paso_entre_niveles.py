@@ -317,44 +317,106 @@ class MenuView(arcade.View):
 
 # --- VISTA: AJUSTES ---
 class SettingsView(arcade.View):
+    def __init__(self):
+        super().__init__()
+        # Inicializamos el gestor de UI para el botón nuevo y los pop-ups
+        self.manager = arcade.gui.UIManager()
+        
+        self.boton_borrar = arcade.gui.UIFlatButton(text="BORRAR PARTIDAS GUARDADAS", width=300)
+        
+        # Función a realizar al pulsar el botón de borrar
+        @self.boton_borrar.event("on_click")
+        def on_click_borrar(event):
+
+            # Creamos un mensaje de seguridad inicial
+            caja_alerta = arcade.gui.UIMessageBox(
+                width=420,
+                height=200,
+                message_text="¿Seguro que quieres borrar TODAS las partidas?\nEsta acción es irreversible.",
+                buttons=["Cancelar", "Borrar"]
+            )
+            
+            @caja_alerta.event("on_action")
+            def accion_borrar(action_event):
+                if action_event.action == "Borrar":
+
+                    if os.path.exists(ARCHIVO_GUARDADO):
+                        os.remove(ARCHIVO_GUARDADO)
+                    
+                    # Reiniciamos las variables de progreso en la memoria del juego
+                    global ESTADOS_NIVELES, PARTIDA_ACTUAL
+                    ESTADOS_NIVELES.update({
+                        1: "no_conseguido",
+                        2: "bloqueado",
+                        3: "bloqueado",
+                        4: "bloqueado",
+                        5: "bloqueado"
+                    })
+                    PARTIDA_ACTUAL = None
+                    
+                    caja_confirmacion = arcade.gui.UIMessageBox(
+                        width=350,
+                        height=150,
+                        message_text="¡Las partidas han sido borradas!",
+                        buttons=["Aceptar"]
+                    )
+                    self.manager.add(caja_confirmacion)
+
+            self.manager.add(caja_alerta)
+        
+        self.anclaje = arcade.gui.UIAnchorLayout()
+        self.anclaje.add(
+            child=self.boton_borrar,
+            anchor_x="center_x",
+            anchor_y="center_y",
+            align_y=-150
+        )
+        self.manager.add(self.anclaje)
+
     def on_show_view(self):
+        self.manager.enable()
         arcade.set_background_color(arcade.color.ORANGE_PEEL)
 
     def on_draw(self):
         self.clear()
         cx, cy = self.window.width / 2, self.window.height / 2
         
-        arcade.draw_text("AJUSTES DE SONIDO", cx, self.window.height * 0.7,
-                         arcade.color.WHITE, font_size=40, anchor_x="center")
+        arcade.draw_text("AJUSTES DE SONIDO", cx, self.window.height * 0.75,
+                         arcade.color.WHITE, font_size = 35, anchor_x="center")
         
         # Muestra el volumen actual
         vol_porcentaje = int(self.window.volumen * 100)
-        arcade.draw_text(f"VOLUMEN: {vol_porcentaje}%", cx, cy + 50,
+        arcade.draw_text(f"VOLUMEN: {vol_porcentaje}%", cx, cy + 100,
                          arcade.color.WHITE, font_size=30, anchor_x="center")
 
         # Botón Menos (-)
-        arcade.draw_lrbt_rectangle_filled(cx - 120, cx - 40, cy - 20, cy + 20, arcade.color.BLACK_LEATHER_JACKET)
-        arcade.draw_text("-", cx - 80, cy, arcade.color.WHITE, font_size=30, anchor_x="center", anchor_y="center")
+        arcade.draw_lrbt_rectangle_filled(cx - 120, cx - 40, cy + 20, cy + 60, arcade.color.BLACK_LEATHER_JACKET)
+        arcade.draw_text("-", cx - 80, cy + 40, arcade.color.WHITE, font_size=30, anchor_x="center", anchor_y="center")
 
         # Botón Más (+)
-        arcade.draw_lrbt_rectangle_filled(cx + 40, cx + 120, cy - 20, cy + 20, arcade.color.BLACK_LEATHER_JACKET)
-        arcade.draw_text("+", cx + 80, cy, arcade.color.WHITE, font_size=30, anchor_x="center", anchor_y="center")
+        arcade.draw_lrbt_rectangle_filled(cx + 40, cx + 120, cy + 20, cy + 60, arcade.color.BLACK_LEATHER_JACKET)
+        arcade.draw_text("+", cx + 80, cy + 40, arcade.color.WHITE, font_size=30, anchor_x="center", anchor_y="center")
+
+        arcade.draw_text("BORRADO DE PARTIDAS", cx, self.window.height * 0.4,
+                         arcade.color.WHITE, font_size = 35, anchor_x="center")
 
         # Botón Volver
         arcade.draw_lrbt_rectangle_outline(cx - 60, cx + 60, 90, 130, arcade.color.WHITE, border_width=2)
         arcade.draw_text("VOLVER", cx, 110, arcade.color.WHITE, font_size=15, anchor_x="center", anchor_y="center")
 
+        self.manager.draw()
+
     def on_mouse_press(self, x, y, button, modifiers):
         cx, cy = self.window.width / 2, self.window.height / 2
 
         # Clic en MENOS (-)
-        if cx - 120 < x < cx - 40 and cy - 20 < y < cy + 20:
+        if cx - 120 < x < cx - 40 and cy + 20 < y < cy + 60:
             self.window.volumen = max(0.0, self.window.volumen - 0.1)
             if getattr(self.window, 'reproductor_menu', None):
                 self.window.reproductor_menu.volume = self.window.volumen
 
         # Clic en MÁS (+)
-        elif cx + 40 < x < cx + 120 and cy - 20 < y < cy + 20:
+        elif cx + 40 < x < cx + 120 and cy + 20 < y < cy + 60:
             self.window.volumen = min(1.0, self.window.volumen + 0.1)
             if getattr(self.window, 'reproductor_menu', None):
                 self.window.reproductor_menu.volume = self.window.volumen
@@ -362,6 +424,9 @@ class SettingsView(arcade.View):
         # Clic en VOLVER
         elif cx - 60 < x < cx + 60 and 90 < y < 130:
             self.window.show_view(MenuView())
+
+    def on_hide_view(self):
+        self.manager.disable()
 
 class VistaNivelEnMapa:
     """
