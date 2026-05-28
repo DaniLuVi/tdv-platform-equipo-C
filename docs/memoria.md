@@ -1,6 +1,6 @@
 # Memoria del proyecto
 
-## 1. Introducción y conecpto del juego
+## 1. Introducción y concepto del juego
 
 - Descripción general:
 
@@ -71,4 +71,6 @@ Al pulsar cualquiera de esos botones, se carga la vista Mapa con el mapa de nive
 
 Durante el ciclo de desarrollo han surgido varios retos técnicos, principalmente derivados de la integración de capas y el uso de las funciones de la versión 3.3.3 de la biblioteca Arcade:
 
-(aquí deberíamos de poner unos cuantos problemas reales que hayamos tenido cada uno)
+Uno de los problemas que tuvimos fue que tras realizar commit y push, los cambios no se reflejaban correctamente en los ordenadores de mis compañeros. Se detectó que el código contenía rutas absolutas vinculadas al directorio local de mi ordenador. Sin embargo, encontramos la solución, modificamos todas las rutas para que el programa fuese funcional en cualquier ordenador.
+
+
