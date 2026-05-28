@@ -534,6 +534,10 @@ class Mapa(arcade.View):
         @self.boton_ayuda.event("on_click")
         def mostrar_ayuda(event):
             mensaje_controles = (
+                "Tipo de nivel:\n"
+                "    - Niveles accesibles: Candado abierto\n"
+                "    - Niveles bloqueados: Candado cerrado\n"
+                "    - Niveles conseguidos: Gema\n\n"
                 "CONTROLES DEL JUEGO:\n\n"
                 "🔥 FIREBOY (Azul):\n"
                 "  - Moverse: Flechas Izquierda / Derecha\n"
@@ -1351,10 +1355,149 @@ class Nivel4(Nivel):
         self.musica_mapa = arcade.load_sound(musica)
 
         self.victoria = False
+        self.tiempo_restante = 30.0
+        self.contador_monedas = 0
+        self.total_monedas = 12
+
+    def setup(self):
+        self.victoria = False
+        self.tiempo_restante = 30.0
+        self.contador_monedas = 0
+
+        mapa = os.path.join("nivel desierto", "desierto_mapa.tmj")
+
+        layer_options = {
+            "suelo": {"use_spatial_hash": True},
+            "arena": {"use_spatial_hash": True},
+            "plataformas": {"use_spatial_hash": True},
+            "monedas": {"use_spatial_hash": True},
+            "agua": {"use_spatial_hash": True},
+            "lava": {"use_spatial_hash": True},
+            "veneno": {"use_spatial_hash": True},
+            "puerta_chico": {"use_spatial_hash": True},
+            "puerta_chica": {"use_spatial_hash": True},
+        }
+
+        try:
+            mapa_temp = arcade.load_tilemap(mapa)
+            escala_auto = self.alto_logico / (mapa_temp.height * mapa_temp.tile_height)
+            tile_map = arcade.load_tilemap(mapa, scaling=escala_auto, layer_options=layer_options)
+            self.scene = arcade.Scene.from_tilemap(tile_map)
+        except Exception as e:
+            print(f"Error cargando TMX Nivel 4: {e}")
+            self.scene = None
+            return
+        
+        self.ancho_mapa_escalado = mapa_temp.width * mapa_temp.tile_width * escala_auto
+
+        # Personajes
+        self.fireboy = Fireboy()
+        self.fireboy.texture = arcade.load_texture("chico.png")
+        self.fireboy.scale = 0.07
+        self.fireboy.center_x = 100
+        self.fireboy.center_y = 150
+        self.scene.add_sprite("Fireboy", self.fireboy)
+
+        self.watergirl = Watergirl()
+        self.watergirl.texture = arcade.load_texture("chica.png")
+        self.watergirl.scale = 0.07
+        self.watergirl.center_x = self.ancho_mapa_escalado - 100
+        self.watergirl.center_y = 400
+        self.scene.add_sprite("Watergirl", self.watergirl)
+
+        # Muros y Física
+        muros = arcade.SpriteList()
+        for nombre in ["suelo", "arena", "plataformas"]:
+            if nombre in self.scene:
+                for sprite in self.scene[nombre]:
+                    muros.append(sprite)
+
+        self.fireboy.physics_engine = arcade.PhysicsEnginePlatformer(
+            self.fireboy, gravity_constant=GRAVITY, walls=muros
+        )
+        self.watergirl.physics_engine = arcade.PhysicsEnginePlatformer(
+            self.watergirl, gravity_constant=GRAVITY, walls=muros
+        )
 
     def on_show_view(self):
         super().on_show_view()  
         self.musica_actual = arcade.play_sound(self.musica_mapa, volume = self.window.volumen, loop = True)
+
+    def on_draw(self):
+        self.clear()
+
+        with self.camera.activate():
+            fondo = arcade.rect.LBWH(0, 0, getattr(self, 'ancho_mapa_escalado', self.ancho_logico), self.alto_logico)
+            arcade.draw_rect_filled(fondo, arcade.color.SKY_BLUE)
+
+            if self.scene:
+                self.scene.draw()
+        
+        # Dibujamos los textos por encima pegados a la pantalla de la ventana
+        arcade.draw_text(f"Monedas: {self.contador_monedas} / {self.total_monedas}", 
+                         20, self.window.height - 40, arcade.color.GOLDENROD, 24, font_name="Impact")
+        
+        color_tiempo = arcade.color.RED if self.tiempo_restante <= 15 else arcade.color.WHITE
+        arcade.draw_text(f"Tiempo: {int(self.tiempo_restante)}", 
+                         20, self.window.height - 75, color_tiempo, 24, font_name="Impact")
+
+    def on_update(self, delta_time):
+        if not self.scene or self.victoria:
+            return
+        
+        self.fireboy.physics_engine.update()
+        self.watergirl.physics_engine.update()
+
+        # Lógica de la cuenta atrás
+        self.tiempo_restante -= delta_time
+        if self.tiempo_restante <= 0:
+            self.window.show_view(NivelPerdido(self.numero_nivel))
+            return
+        
+        # Límites de pantalla para no salirse del mapa
+        for jugador in [self.fireboy, self.watergirl]:
+            if jugador.left < 0:
+                jugador.left = 0
+            elif jugador.right > getattr(self, 'ancho_mapa_escalado', self.ancho_logico):
+                jugador.right = getattr(self, 'ancho_mapa_escalado', self.ancho_logico)
+
+        # Colisiones con monedas
+        if "monedas" in self.scene:
+            for jugador in [self.fireboy, self.watergirl]:
+                monedas_tocadas = arcade.check_for_collision_with_list(jugador, self.scene["monedas"])
+                for moneda in monedas_tocadas:
+                    moneda.remove_from_sprite_lists()
+                    self.contador_monedas += 1
+
+        # Colisiones entre los personajes
+        if arcade.check_for_collision(self.fireboy, self.watergirl):
+            self.window.show_view(NivelPerdido(self.numero_nivel))
+            return
+        
+        # Colisiones de muerte por zonas peligrosas
+        capas_muerte_water = ["agua", "veneno"]
+        capas_muerte_fire = ["lava", "veneno"]
+
+        for jugador, capas in [(self.fireboy, capas_muerte_fire),
+                               (self.watergirl, capas_muerte_water)]:
+            for nombre in capas:
+                if nombre in self.scene:
+                    if arcade.check_for_collision_with_list(jugador, self.scene[nombre]):
+                        self.window.show_view(NivelPerdido(self.numero_nivel))
+                        return
+                    
+        # Victoria
+        try:
+            if "puerta_chica" in self.scene and "puerta_chico" in self.scene:
+                en_puerta1 = arcade.check_for_collision_with_list(self.watergirl, self.scene["puerta_chica"])
+                en_puerta2 = arcade.check_for_collision_with_list(self.fireboy, self.scene["puerta_chico"])
+                
+                # Se requiere llegar a las puertas Y tener todas las monedas
+                if len(en_puerta1) and len(en_puerta2) and self.contador_monedas >= self.total_monedas:
+                    self.victoria = True
+                    self.window.show_view(NivelConseguido(self.numero_nivel))
+        except:
+            pass
 
     def on_hide_view(self):
         arcade.stop_sound(self.musica_actual)
@@ -1374,7 +1517,7 @@ class Nivel5(Nivel):
         self.victoria = False
         self.palanca_activada = False
 
-        mapa = os.path.join("Nivel final", "nivel_final.tmx")
+        mapa = os.path.join("Nivel_final", "nivel_final.tmx")
 
         layer_options = {
             "Capa de patrones 1": {"use_spatial_hash": True},
@@ -1398,7 +1541,7 @@ class Nivel5(Nivel):
             tile_map = arcade.load_tilemap(mapa, scaling=escala_auto, layer_options=layer_options)
             self.scene = arcade.Scene.from_tilemap(tile_map)
         except Exception as e:
-            print(f"Error cargando TMX Nivel 3: {e}")
+            print(f"Error cargando TMX Nivel 5: {e}")
             self.scene = None
             return
 
