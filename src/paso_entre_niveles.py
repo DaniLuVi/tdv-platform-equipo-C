@@ -411,6 +411,17 @@ class Mapa(arcade.View):
         self.manager = arcade.gui.UIManager()
         self.manager.enable()
 
+        self.contenedor_botones = arcade.gui.UIBoxLayout(vertical=False, space_between=20)
+
+        # Creamos un botón de ayuda
+        self.img_ayuda = arcade.load_texture(os.path.join("assets", "imgs_niveles_en_mapa", "ayuda.png"))
+        self.boton_ayuda = arcade.gui.UITextureButton(
+            texture=self.img_ayuda,
+            texture_hovered=self.img_ayuda,
+            texture_pressed=self.img_ayuda,
+            scale=0.08
+        )
+
         # Creamos un botón para guardar la partida
         self.img_guardado = arcade.load_texture(os.path.join("assets", "imgs_niveles_en_mapa", "guardado.png"))
         self.boton_guardado = arcade.gui.UITextureButton(
@@ -420,10 +431,13 @@ class Mapa(arcade.View):
             scale=0.15
         )
 
+        self.contenedor_botones.add(self.boton_ayuda)
+        self.contenedor_botones.add(self.boton_guardado)
+
         # Lo ponemos en la esquina superior derecha
         self.ancho = arcade.gui.UIAnchorLayout()
         self.ancho.add(
-            child = self.boton_guardado,
+            child = self.contenedor_botones,
             anchor_x = "right",
             anchor_y = "top",
             align_x = -20,
@@ -431,15 +445,51 @@ class Mapa(arcade.View):
         )
         self.manager.add(self.ancho)
 
-        self.mostrar_mensaje_guardado = False
-        self.tiempo = 0.0
-
         # Asignamos la función del botón cuando se hace click
         @self.boton_guardado.event("on_click")
         def guardar(event):
             guardar_partida()
-            self.mostrar_mensaje_guardado = True
-            self.tiempo = 0.0
+            
+            mensaje_guardado = (
+                "¡PARTIDA GUARDADA!\n\n"
+                "Tu progreso actual se ha guardado\n"
+                "correctamente. Podrás continuar\n"
+                "desde aquí la próxima vez."
+            )
+            
+            caja_guardado = arcade.gui.UIMessageBox(
+                width=350,
+                height=200,
+                message_text=mensaje_guardado,
+                buttons=["Aceptar"]
+            )
+            self.manager.add(caja_guardado)
+
+        # Asignamos la función del botón de ayuda cuando se hace click
+        @self.boton_ayuda.event("on_click")
+        def mostrar_ayuda(event):
+            mensaje_controles = (
+                "CONTROLES DEL JUEGO:\n\n"
+                "🔥 FIREBOY (Azul):\n"
+                "  - Moverse: Flechas Izquierda / Derecha\n"
+                "  - Saltar: Flecha Arriba\n\n"
+                "💧 WATERGIRL (Roja):\n"
+                "  - Moverse: Teclas A / D\n"
+                "  - Saltar: Tecla W\n\n"
+                "MECÁNICA:\n"
+                "Ambos deben llegar a sus respectivas puertas. Si\n"
+                "alguno toca el veneno o su elemento opuesto,\n"
+                "¡la partida terminará para los dos!"
+            )
+            
+            # Generamos el desplegable nativo de Arcade
+            caja_mensaje = arcade.gui.UIMessageBox(
+                width=450,
+                height=380,
+                message_text=mensaje_controles,
+                buttons=["Cerrar"]
+            )
+            self.manager.add(caja_mensaje)
 
     def actualizar_iconos(self):
         """Carga en el SpriteList solo los iconos que correspondan al estado actual"""
@@ -488,16 +538,6 @@ class Mapa(arcade.View):
 
         arcade.draw_text("Presiona ESC para volver al menú", self.window.width / 1.2, 60,
                          arcade.color.WHITE, font_size=20, font_name = "Impact", anchor_x="center")
-
-        if self.mostrar_mensaje_guardado:
-            arcade.draw_text("Partida guardada con éxito", 20, SCREEN_HEIGHT - 120,
-                             arcade.color.GREEN, font_size = 16, font_name = "Impact")
-        
-    def on_update(self, delta_time):
-        if self.mostrar_mensaje_guardado:
-            self.tiempo += delta_time
-            if self.tiempo > 3.0:  # Desaparece tras 3 segundos
-                self.mostrar_mensaje_guardado = False
 
     def on_mouse_press(self, x, y, button, modifiers):
         if button == arcade.MOUSE_BUTTON_LEFT:
