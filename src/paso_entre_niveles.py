@@ -425,6 +425,10 @@ class SettingsView(arcade.View):
         elif cx - 60 < x < cx + 60 and 90 < y < 130:
             self.window.show_view(MenuView())
 
+    def on_key_press(self, key, modifiers):
+        if key == arcade.key.ESCAPE:
+            self.window.show_view(MenuView())
+
     def on_hide_view(self):
         self.manager.disable()
 
@@ -542,7 +546,7 @@ class Mapa(arcade.View):
                 "🔥 Stella (Rojo):\n"
                 "    - Moverse: A (izquierda) / D (derecha)\n"
                 "    - Saltar: W (arriba)\n\n"
-                "💧 Galaxxy (Azul):\n"
+                "💧 Galaxy (Azul):\n"
                 "    - Moverse: Flecha izquierda / Flecha derecha\n"
                 "    - Saltar: Flecha arriba\n\n"
                 "OBJETIVO DEL JUEGO:\n\n"
@@ -615,7 +619,7 @@ class Mapa(arcade.View):
                 distancia = math.dist((x, y), (nivel.x, nivel.y))
 
                 if distancia <= nivel.radio_logo:
-                    if ESTADOS_NIVELES[nivel.nivel] != "bloqueado":
+                    if ESTADOS_NIVELES[nivel.nivel] == "no_conseguido":
                         print(f"¡Cargando el nivel {nivel.nivel}!")
                         if nivel.nivel in CLASES_NIVELES: 
                             self.window.show_view(CLASES_NIVELES[nivel.nivel]())
@@ -790,11 +794,11 @@ class Personaje(arcade.Sprite, ABC):
         self.center_y = 200
 
 # ------------------ PERSONAJES ------------------
-class Fireboy(Personaje):
+class Stella(Personaje):
     def es_seguro(self, tipo):
         return tipo == LAVA
 
-class Watergirl(Personaje):
+class Galaxy(Personaje):
     def es_seguro(self, tipo):
         return tipo == AGUA
 
@@ -852,10 +856,10 @@ class Nivel(arcade.View):
         self.camera.position = (self.ancho_logico / 2, self.alto_logico / 2)
         
         self.scene = None
-        self.fireboy = None
-        self.watergirl = None
-        self.physics_engine_fireboy = None
-        self.physics_engine_watergirl = None
+        self.stella = None
+        self.galaxy = None
+        self.physics_engine_stella = None
+        self.physics_engine_galaxy = None
         self.victoria = False
 
     def on_show_view(self): 
@@ -864,28 +868,28 @@ class Nivel(arcade.View):
 
     # ---------------- CONTROLES ----------------
     def on_key_press(self, key, modifiers):
-        # Fireboy (flechas)
-        if key == arcade.key.LEFT:
-            self.fireboy.change_x = -PLAYER_SPEED
-        elif key == arcade.key.RIGHT:
-            self.fireboy.change_x = PLAYER_SPEED
-        elif key == arcade.key.UP:
-            self.fireboy.saltar()
-
-        # Watergirl (WASD)
+        # Stella (flechas)
         if key == arcade.key.A:
-            self.watergirl.change_x = -PLAYER_SPEED
+            self.stella.change_x = -PLAYER_SPEED
         elif key == arcade.key.D:
-            self.watergirl.change_x = PLAYER_SPEED
+            self.stella.change_x = PLAYER_SPEED
         elif key == arcade.key.W:
-            self.watergirl.saltar()
+            self.stella.saltar()
+
+        # Galaxy (WASD)
+        if key == arcade.key.LEFT:
+            self.galaxy.change_x = -PLAYER_SPEED
+        elif key == arcade.key.RIGHT:
+            self.galaxy.change_x = PLAYER_SPEED
+        elif key == arcade.key.UP:
+            self.galaxy.saltar()
 
     def on_key_release(self, key, modifiers):
-        if key in [arcade.key.LEFT, arcade.key.RIGHT]:
-            self.fireboy.change_x = 0
-
         if key in [arcade.key.A, arcade.key.D]:
-            self.watergirl.change_x = 0
+            self.stella.change_x = 0
+
+        if key in [arcade.key.LEFT, arcade.key.RIGHT]:
+            self.galaxy.change_x = 0
 
 class Nivel1(Nivel):
     def __init__(self):
@@ -926,19 +930,19 @@ class Nivel1(Nivel):
             return
 
         # Personajes
-        self.fireboy = Fireboy()
-        self.fireboy.texture = arcade.load_texture("chico.png")
-        self.fireboy.scale = 0.1
-        self.fireboy.center_x = 150
-        self.fireboy.center_y = 100
-        self.scene.add_sprite("Fireboy", self.fireboy)
+        self.stella = Stella()
+        self.stella.texture = arcade.load_texture("chica.png")
+        self.stella.scale = 0.1
+        self.stella.center_x = 100
+        self.stella.center_y = 200
+        self.scene.add_sprite("Stella", self.stella)
 
-        self.watergirl = Watergirl()
-        self.watergirl.texture = arcade.load_texture("chica.png")
-        self.watergirl.scale = 0.1
-        self.watergirl.center_x = 100
-        self.watergirl.center_y = 200
-        self.scene.add_sprite("Watergirl", self.watergirl)
+        self.galaxy = Galaxy()
+        self.galaxy.texture = arcade.load_texture("chico.png")
+        self.galaxy.scale = 0.1
+        self.galaxy.center_x = 150
+        self.galaxy.center_y = 100
+        self.scene.add_sprite("Galaxy", self.galaxy)
 
         # Motores de física
         try:
@@ -947,12 +951,12 @@ class Nivel1(Nivel):
             muros = []
 
         # Física
-        self.fireboy.physics_engine = arcade.PhysicsEnginePlatformer(
-            self.fireboy, gravity_constant = GRAVITY, walls = muros
+        self.stella.physics_engine = arcade.PhysicsEnginePlatformer(
+            self.stella, gravity_constant = GRAVITY, walls = muros
         )
 
-        self.watergirl.physics_engine = arcade.PhysicsEnginePlatformer(
-            self.watergirl, gravity_constant = GRAVITY, walls = muros
+        self.galaxy.physics_engine = arcade.PhysicsEnginePlatformer(
+            self.galaxy, gravity_constant = GRAVITY, walls = muros
         )
 
     def on_show_view(self):
@@ -978,22 +982,22 @@ class Nivel1(Nivel):
 
     def on_update(self, delta_time):
 
-        if not self.scene or not self.fireboy.physics_engine or not self.watergirl.physics_engine:
+        if not self.scene or not self.stella.physics_engine or not self.galaxy.physics_engine:
             return
         # Física
-        self.fireboy.physics_engine.update()
-        self.watergirl.physics_engine.update()
+        self.stella.physics_engine.update()
+        self.galaxy.physics_engine.update()
 
         # Colisiones entre los personajes
-        if arcade.check_for_collision(self.fireboy, self.watergirl):
+        if arcade.check_for_collision(self.stella, self.galaxy):
             self.window.show_view(NivelPerdido(self.numero_nivel))
             return
 
-        capas_muerte_water = ["Capa de patrones 2", "Capa de patrones 5"]
-        capas_muerte_fire = ["Capa de patrones 2", "Capa de patrones 4"]
+        capas_muerte_stella = ["Capa de patrones 2", "Capa de patrones 5"]
+        capas_muerte_galaxy = ["Capa de patrones 2", "Capa de patrones 4"]
 
         # Colisiones de muerte
-        for jugador, capas in [(self.fireboy, capas_muerte_fire), (self.watergirl, capas_muerte_water)]:
+        for jugador, capas in [(self.stella, capas_muerte_stella), (self.galaxy, capas_muerte_galaxy)]:
             for nombre in capas:
                 try:
                     if arcade.check_for_collision_with_list(jugador, self.scene[nombre]):
@@ -1004,9 +1008,9 @@ class Nivel1(Nivel):
         
         # Colisiones de victoria
         try:
-            en_puerta_fire = arcade.check_for_collision_with_list(self.fireboy, self.scene["Capa de patrones 7"])
-            en_puerta_water = arcade.check_for_collision_with_list(self.watergirl, self.scene["Capa de patrones 6"])
-            if en_puerta_fire and en_puerta_water:
+            en_puerta_stella = arcade.check_for_collision_with_list(self.stella, self.scene["Capa de patrones 6"])
+            en_puerta_galaxy = arcade.check_for_collision_with_list(self.galaxy, self.scene["Capa de patrones 7"])
+            if en_puerta_stella and en_puerta_galaxy:
                 self.window.show_view(NivelConseguido(self.numero_nivel))
         except (KeyError, TypeError):
             pass
@@ -1057,19 +1061,19 @@ class Nivel2(Nivel):
             self.scene = None
             return
         
-        self.fireboy = Fireboy()
-        self.fireboy.texture = arcade.load_texture("chico.png")
-        self.fireboy.scale = 0.07 
-        self.fireboy.center_x = self.ancho_logico - 50
-        self.fireboy.center_y = 50
-        self.scene.add_sprite("Fireboy", self.fireboy)
+        self.stella = Stella()
+        self.stella.texture = arcade.load_texture("chica.png")
+        self.stella.scale = 0.07 
+        self.stella.center_x = 50
+        self.stella.center_y = self.alto_logico - 50
+        self.scene.add_sprite("Stella", self.stella)
 
-        self.watergirl = Watergirl()
-        self.watergirl.texture = arcade.load_texture("chica.png")
-        self.watergirl.scale = 0.07  
-        self.watergirl.center_x = 50
-        self.watergirl.center_y = self.alto_logico - 50 
-        self.scene.add_sprite("Watergirl", self.watergirl)
+        self.galaxy = Galaxy()
+        self.galaxy.texture = arcade.load_texture("chico.png")
+        self.galaxy.scale = 0.07  
+        self.galaxy.center_x = self.ancho_logico - 50
+        self.galaxy.center_y = 50 
+        self.scene.add_sprite("Galaxy", self.galaxy)
 
         self.objetos_que_caen = arcade.SpriteList()
         self.tiempo_spawn = 0
@@ -1079,11 +1083,11 @@ class Nivel2(Nivel):
         except KeyError:
             muros = []
 
-        self.fireboy.physics_engine = arcade.PhysicsEnginePlatformer(
-            self.fireboy, gravity_constant=GRAVITY, walls=muros
+        self.stella.physics_engine = arcade.PhysicsEnginePlatformer(
+            self.stella, gravity_constant=GRAVITY, walls=muros
         )
-        self.watergirl.physics_engine = arcade.PhysicsEnginePlatformer(
-            self.watergirl, gravity_constant=GRAVITY, walls=muros
+        self.galaxy.physics_engine = arcade.PhysicsEnginePlatformer(
+            self.galaxy, gravity_constant=GRAVITY, walls=muros
         )
 
     def crear_objeto_que_cae(self):
@@ -1122,14 +1126,14 @@ class Nivel2(Nivel):
                 self.objetos_que_caen.draw()
 
     def on_update(self, delta_time):
-        if not self.scene or not self.fireboy.physics_engine or not self.watergirl.physics_engine:
+        if not self.scene or not self.stella.physics_engine or not self.galaxy.physics_engine:
             return
             
-        self.fireboy.physics_engine.update()
-        self.watergirl.physics_engine.update()
+        self.stella.physics_engine.update()
+        self.galaxy.physics_engine.update()
 
         # Colisiones entre los personajes
-        if arcade.check_for_collision(self.fireboy, self.watergirl):
+        if arcade.check_for_collision(self.stella, self.galaxy):
             self.window.show_view(NivelPerdido(self.numero_nivel))
             return
         
@@ -1143,18 +1147,18 @@ class Nivel2(Nivel):
 
         # Colisiones de los cocos con los personajes
         for coco in self.objetos_que_caen:
-            if arcade.check_for_collision(coco, self.fireboy) or arcade.check_for_collision(coco, self.watergirl):
+            if arcade.check_for_collision(coco, self.stella) or arcade.check_for_collision(coco, self.galaxy):
                 self.window.show_view(NivelPerdido(self.numero_nivel))
                 return
             # Limpiar cocos que ya cayeron por debajo del mapa
             if coco.center_y < -100:
                 coco.remove_from_sprite_lists()
 
-        capas_muerte_water = ["Capa de patrones 7", "agua"]
-        capas_muerte_fire = ["Capa de patrones 7", "Capa de patrones 5"]
+        capas_muerte_stella = ["Capa de patrones 7", "agua"]
+        capas_muerte_galaxy = ["Capa de patrones 7", "Capa de patrones 5"]
 
         # Colisiones de muerte por zonas peligrosas
-        for jugador, capas in [(self.fireboy, capas_muerte_fire), (self.watergirl, capas_muerte_water)]:
+        for jugador, capas in [(self.stella, capas_muerte_stella), (self.galaxy, capas_muerte_galaxy)]:
             for nombre in capas:
                 try:
                     if arcade.check_for_collision_with_list(jugador, self.scene[nombre]):
@@ -1165,10 +1169,10 @@ class Nivel2(Nivel):
 
         # Colisiones de victoria
         try:
-            en_puerta_fire = arcade.check_for_collision_with_list(self.fireboy, self.scene["Capa de patrones 2"])
-            en_puerta_water = arcade.check_for_collision_with_list(self.watergirl, self.scene["Capa de patrones 3"])
+            en_puerta_stella = arcade.check_for_collision_with_list(self.stella, self.scene["Capa de patrones 3"])
+            en_puerta_galaxy = arcade.check_for_collision_with_list(self.galaxy, self.scene["Capa de patrones 2"])
             
-            if en_puerta_fire and en_puerta_water:
+            if en_puerta_stella and en_puerta_galaxy:
                 self.window.show_view(NivelConseguido(self.numero_nivel))
         except (KeyError, TypeError):
             pass
@@ -1220,30 +1224,30 @@ class Nivel3(Nivel):
             self.altura_minima = self.altura_maxima - 102
 
         # Jugadores
-        self.fireboy = Fireboy()
-        self.fireboy.texture = arcade.load_texture("chico.png")
-        self.fireboy.scale = 0.08
-        self.fireboy.center_x = self.ancho_logico - 80
-        self.fireboy.center_y = 100
-        self.scene.add_sprite("Fireboy", self.fireboy)
+        self.stella = Stella()
+        self.stella.texture = arcade.load_texture("chica.png")
+        self.stella.scale = 0.08
+        self.stella.center_x = 80
+        self.stella.center_y = 100
+        self.scene.add_sprite("Stella", self.stella)
 
-        self.watergirl = Watergirl()
-        self.watergirl.texture = arcade.load_texture("chica.png")
-        self.watergirl.scale = 0.08
-        self.watergirl.center_x = 80
-        self.watergirl.center_y = 100
-        self.scene.add_sprite("Watergirl", self.watergirl)
+        self.galaxy = Galaxy()
+        self.galaxy.texture = arcade.load_texture("chico.png")
+        self.galaxy.scale = 0.08
+        self.galaxy.center_x = self.ancho_logico - 80
+        self.galaxy.center_y = 100
+        self.scene.add_sprite("Galaxy", self.galaxy)
 
         # Muros y Física
         muros = arcade.SpriteList()
         if "capa_agua_solido" in self.scene:
             muros = self.scene["capa_agua_solido"]
 
-        self.fireboy.physics_engine = arcade.PhysicsEnginePlatformer(
-            self.fireboy, walls=muros, platforms=plataformas, gravity_constant=GRAVITY
+        self.stella.physics_engine = arcade.PhysicsEnginePlatformer(
+            self.stella, walls=muros, platforms=plataformas, gravity_constant=GRAVITY
         )
-        self.watergirl.physics_engine = arcade.PhysicsEnginePlatformer(
-            self.watergirl, walls=muros, platforms=plataformas, gravity_constant=GRAVITY
+        self.galaxy.physics_engine = arcade.PhysicsEnginePlatformer(
+            self.galaxy, walls=muros, platforms=plataformas, gravity_constant=GRAVITY
         )
 
         # Enemigos
@@ -1275,8 +1279,8 @@ class Nivel3(Nivel):
         if not self.scene:
             return
 
-        self.fireboy.physics_engine.update()
-        self.watergirl.physics_engine.update()
+        self.stella.physics_engine.update()
+        self.galaxy.physics_engine.update()
         
         # Obtenemos la lista de plataformas móviles
         plataformas_actuales = arcade.SpriteList()
@@ -1288,13 +1292,13 @@ class Nivel3(Nivel):
             piraña.update(delta_time, plataformas_moviles = plataformas_actuales)
 
         # Colisiones entre los personajes
-        if arcade.check_for_collision(self.fireboy, self.watergirl):
+        if arcade.check_for_collision(self.stella, self.galaxy):
             self.window.show_view(NivelPerdido(self.numero_nivel))
             return
         
         # Colisiones con enemigos
         for pirana in self.lista_enemigos:
-            if arcade.check_for_collision(pirana, self.fireboy) or arcade.check_for_collision(pirana, self.watergirl):
+            if arcade.check_for_collision(pirana, self.stella) or arcade.check_for_collision(pirana, self.galaxy):
                 self.window.show_view(NivelPerdido(self.numero_nivel))
                 return
             
@@ -1337,10 +1341,10 @@ class Nivel3(Nivel):
                     self.estado_plataformas = "esperando_arriba"
 
         # Colisiones de muerte por zonas peligrosas
-        capas_muerte_water = ["capa_agua_estela", "capa_veneno"]
-        capas_muerte_fire = ["capa_fuego_galaxi", "capa_veneno"]
+        capas_muerte_stella = ["capa_agua_estela", "capa_veneno"]
+        capas_muerte_galaxy = ["capa_fuego_galaxi", "capa_veneno"]
 
-        for jugador, capas in [(self.fireboy, capas_muerte_fire), (self.watergirl, capas_muerte_water)]:
+        for jugador, capas in [(self.stella, capas_muerte_stella), (self.galaxy, capas_muerte_galaxy)]:
             for nombre in capas:
                 try:
                     if arcade.check_for_collision_with_list(jugador, self.scene[nombre]):
@@ -1350,9 +1354,9 @@ class Nivel3(Nivel):
 
         # Victoria
         try:
-            en_puerta_fire = arcade.check_for_collision_with_list(self.fireboy, self.scene["puerta_chico_acuatico"])
-            en_puerta_water = arcade.check_for_collision_with_list(self.watergirl, self.scene["puerta_chica_acuatico"])
-            if en_puerta_fire and en_puerta_water:
+            en_puerta_stella = arcade.check_for_collision_with_list(self.stella, self.scene["puerta_chica_acuatico"])
+            en_puerta_galaxy = arcade.check_for_collision_with_list(self.galaxy, self.scene["puerta_chico_acuatico"])
+            if en_puerta_stella and en_puerta_galaxy:
                 self.window.show_view(NivelConseguido(self.numero_nivel))
         except (KeyError, TypeError): 
             pass
@@ -1405,19 +1409,19 @@ class Nivel4(Nivel):
         self.ancho_mapa_escalado = mapa_temp.width * mapa_temp.tile_width * escala_auto
 
         # Personajes
-        self.fireboy = Fireboy()
-        self.fireboy.texture = arcade.load_texture("chico.png")
-        self.fireboy.scale = 0.07
-        self.fireboy.center_x = 100
-        self.fireboy.center_y = 150
-        self.scene.add_sprite("Fireboy", self.fireboy)
+        self.stella = Stella()
+        self.stella.texture = arcade.load_texture("chica.png")
+        self.stella.scale = 0.07
+        self.stella.center_x = self.ancho_mapa_escalado - 100
+        self.stella.center_y = 400
+        self.scene.add_sprite("Stella", self.stella)
 
-        self.watergirl = Watergirl()
-        self.watergirl.texture = arcade.load_texture("chica.png")
-        self.watergirl.scale = 0.07
-        self.watergirl.center_x = self.ancho_mapa_escalado - 100
-        self.watergirl.center_y = 400
-        self.scene.add_sprite("Watergirl", self.watergirl)
+        self.galaxy = Galaxy()
+        self.galaxy.texture = arcade.load_texture("chico.png")
+        self.galaxy.scale = 0.07
+        self.galaxy.center_x = 100
+        self.galaxy.center_y = 150
+        self.scene.add_sprite("Galaxy", self.galaxy)
 
         # Muros y Física
         muros = arcade.SpriteList()
@@ -1426,11 +1430,11 @@ class Nivel4(Nivel):
                 for sprite in self.scene[nombre]:
                     muros.append(sprite)
 
-        self.fireboy.physics_engine = arcade.PhysicsEnginePlatformer(
-            self.fireboy, gravity_constant=GRAVITY, walls=muros
+        self.stella.physics_engine = arcade.PhysicsEnginePlatformer(
+            self.stella, gravity_constant=GRAVITY, walls=muros
         )
-        self.watergirl.physics_engine = arcade.PhysicsEnginePlatformer(
-            self.watergirl, gravity_constant=GRAVITY, walls=muros
+        self.galaxy.physics_engine = arcade.PhysicsEnginePlatformer(
+            self.galaxy, gravity_constant=GRAVITY, walls=muros
         )
 
     def on_show_view(self):
@@ -1459,8 +1463,8 @@ class Nivel4(Nivel):
         if not self.scene or self.victoria:
             return
         
-        self.fireboy.physics_engine.update()
-        self.watergirl.physics_engine.update()
+        self.stella.physics_engine.update()
+        self.galaxy.physics_engine.update()
 
         # Lógica de la cuenta atrás
         self.tiempo_restante -= delta_time
@@ -1469,7 +1473,7 @@ class Nivel4(Nivel):
             return
         
         # Límites de pantalla para no salirse del mapa
-        for jugador in [self.fireboy, self.watergirl]:
+        for jugador in [self.stella, self.galaxy]:
             if jugador.left < 0:
                 jugador.left = 0
             elif jugador.right > getattr(self, 'ancho_mapa_escalado', self.ancho_logico):
@@ -1477,23 +1481,23 @@ class Nivel4(Nivel):
 
         # Colisiones con monedas
         if "monedas" in self.scene:
-            for jugador in [self.fireboy, self.watergirl]:
+            for jugador in [self.stella, self.galaxy]:
                 monedas_tocadas = arcade.check_for_collision_with_list(jugador, self.scene["monedas"])
                 for moneda in monedas_tocadas:
                     moneda.remove_from_sprite_lists()
                     self.contador_monedas += 1
 
         # Colisiones entre los personajes
-        if arcade.check_for_collision(self.fireboy, self.watergirl):
+        if arcade.check_for_collision(self.stella, self.galaxy):
             self.window.show_view(NivelPerdido(self.numero_nivel))
             return
         
         # Colisiones de muerte por zonas peligrosas
-        capas_muerte_water = ["agua", "veneno"]
-        capas_muerte_fire = ["lava", "veneno"]
+        capas_muerte_stella = ["agua", "veneno"]
+        capas_muerte_galaxy = ["lava", "veneno"]
 
-        for jugador, capas in [(self.fireboy, capas_muerte_fire),
-                               (self.watergirl, capas_muerte_water)]:
+        for jugador, capas in [(self.stella, capas_muerte_stella),
+                               (self.galaxy, capas_muerte_galaxy)]:
             for nombre in capas:
                 if nombre in self.scene:
                     if arcade.check_for_collision_with_list(jugador, self.scene[nombre]):
@@ -1503,8 +1507,8 @@ class Nivel4(Nivel):
         # Victoria
         try:
             if "puerta_chica" in self.scene and "puerta_chico" in self.scene:
-                en_puerta1 = arcade.check_for_collision_with_list(self.watergirl, self.scene["puerta_chica"])
-                en_puerta2 = arcade.check_for_collision_with_list(self.fireboy, self.scene["puerta_chico"])
+                en_puerta1 = arcade.check_for_collision_with_list(self.stella, self.scene["puerta_chica"])
+                en_puerta2 = arcade.check_for_collision_with_list(self.galaxy, self.scene["puerta_chico"])
                 
                 # Se requiere llegar a las puertas Y tener todas las monedas
                 if len(en_puerta1) and len(en_puerta2) and self.contador_monedas >= self.total_monedas:
@@ -1571,19 +1575,19 @@ class Nivel5(Nivel):
                 s.visible = False
 
         # Personajes
-        self.fireboy = Fireboy()
-        self.fireboy.texture = arcade.load_texture("chico.png")
-        self.fireboy.scale = 0.07
-        self.fireboy.center_x = 700
-        self.fireboy.center_y = 750
-        self.scene.add_sprite("Fireboy", self.fireboy)
+        self.stella = Stella()
+        self.stella.texture = arcade.load_texture("chica.png")
+        self.stella.scale = 0.07
+        self.stella.center_x = 150
+        self.stella.center_y = 750
+        self.scene.add_sprite("Stella", self.stella)
 
-        self.watergirl = Watergirl()
-        self.watergirl.texture = arcade.load_texture("chica.png")
-        self.watergirl.scale = 0.07
-        self.watergirl.center_x = 150
-        self.watergirl.center_y = 750
-        self.scene.add_sprite("Watergirl", self.watergirl)
+        self.galaxy = Galaxy()
+        self.galaxy.texture = arcade.load_texture("chico.png")
+        self.galaxy.scale = 0.07
+        self.galaxy.center_x = 700
+        self.galaxy.center_y = 750
+        self.scene.add_sprite("Galaxy", self.galaxy)
 
         # Muros físicos
         muros = arcade.SpriteList()
@@ -1592,11 +1596,11 @@ class Nivel5(Nivel):
                 for sprite in self.scene[nombre]:
                     muros.append(sprite)
 
-        self.fireboy.physics_engine = arcade.PhysicsEnginePlatformer(
-            self.fireboy, gravity_constant=GRAVITY, walls=muros
+        self.stella.physics_engine = arcade.PhysicsEnginePlatformer(
+            self.stella, gravity_constant=GRAVITY, walls=muros
         )
-        self.watergirl.physics_engine = arcade.PhysicsEnginePlatformer(
-            self.watergirl, gravity_constant=GRAVITY, walls=muros
+        self.galaxy.physics_engine = arcade.PhysicsEnginePlatformer(
+            self.galaxy, gravity_constant=GRAVITY, walls=muros
         )
 
     def on_show_view(self):
@@ -1617,20 +1621,20 @@ class Nivel5(Nivel):
         if self.victoria:
             return 
         
-        self.fireboy.physics_engine.update()
-        self.watergirl.physics_engine.update()
+        self.stella.physics_engine.update()
+        self.galaxy.physics_engine.update()
 
         # Colisiones entre los personajes
-        if arcade.check_for_collision(self.fireboy, self.watergirl):
+        if arcade.check_for_collision(self.stella, self.galaxy):
             self.window.show_view(NivelPerdido(self.numero_nivel))
             return
         
         # Colisiones de muerte por zonas peligrosas
-        capas_muerte_water = ["veneno", "agua"]
-        capas_muerte_fire = ["veneno", "lava"]
+        capas_muerte_stella = ["veneno", "agua"]
+        capas_muerte_galaxy = ["veneno", "lava"]
 
-        for jugador, capas in [(self.fireboy, capas_muerte_fire),
-                               (self.watergirl, capas_muerte_water)]:
+        for jugador, capas in [(self.stella, capas_muerte_stella),
+                               (self.galaxy, capas_muerte_galaxy)]:
             for nombre in capas:
                 if nombre in self.scene:
                     if arcade.check_for_collision_with_list(jugador, self.scene[nombre]):
@@ -1640,8 +1644,8 @@ class Nivel5(Nivel):
         # Botón 1
         try:
             tocando_boton1 = (
-                arcade.check_for_collision_with_list(self.fireboy, self.scene["boton1"]) or
-                arcade.check_for_collision_with_list(self.watergirl, self.scene["boton1"])
+                arcade.check_for_collision_with_list(self.stella, self.scene["boton1"]) or
+                arcade.check_for_collision_with_list(self.galaxy, self.scene["boton1"])
             )
         except:
             tocando_boton1 = False
@@ -1658,8 +1662,8 @@ class Nivel5(Nivel):
         # Botón 2
         try:
             tocando_boton2 = (
-                arcade.check_for_collision_with_list(self.fireboy, self.scene["boton2"]) or
-                arcade.check_for_collision_with_list(self.watergirl, self.scene["boton2"])
+                arcade.check_for_collision_with_list(self.stella, self.scene["boton2"]) or
+                arcade.check_for_collision_with_list(self.galaxy, self.scene["boton2"])
             )
         except:
             tocando_boton2 = False
@@ -1677,8 +1681,8 @@ class Nivel5(Nivel):
         try:
             if not self.palanca_activada:
                 tocando_palanca = (
-                    arcade.check_for_collision_with_list(self.fireboy, self.scene["palanca"]) or
-                    arcade.check_for_collision_with_list(self.watergirl, self.scene["palanca"])
+                    arcade.check_for_collision_with_list(self.stella, self.scene["palanca"]) or
+                    arcade.check_for_collision_with_list(self.galaxy, self.scene["palanca"])
                 )
             else:
                 tocando_palanca = False
@@ -1702,8 +1706,8 @@ class Nivel5(Nivel):
 
         # Victoria
         try:
-            en_puerta1 = arcade.check_for_collision_with_list(self.watergirl, self.scene["puertachica"])
-            en_puerta2 = arcade.check_for_collision_with_list(self.fireboy, self.scene["puertachico"])
+            en_puerta1 = arcade.check_for_collision_with_list(self.stella, self.scene["puertachica"])
+            en_puerta2 = arcade.check_for_collision_with_list(self.galaxy, self.scene["puertachico"])
             if len(en_puerta1) and len(en_puerta2):
                 self.victoria = True
                 self.window.show_view(NivelConseguido(self.numero_nivel))
