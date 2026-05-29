@@ -534,27 +534,28 @@ class Mapa(arcade.View):
         @self.boton_ayuda.event("on_click")
         def mostrar_ayuda(event):
             mensaje_controles = (
-                "Tipo de nivel:\n"
+                "TIPO DE NIVEL:\n\n"
                 "    - Niveles accesibles: Candado abierto\n"
                 "    - Niveles bloqueados: Candado cerrado\n"
                 "    - Niveles conseguidos: Gema\n\n"
                 "CONTROLES DEL JUEGO:\n\n"
-                "🔥 FIREBOY (Azul):\n"
-                "  - Moverse: Flechas Izquierda / Derecha\n"
-                "  - Saltar: Flecha Arriba\n\n"
-                "💧 WATERGIRL (Roja):\n"
-                "  - Moverse: Teclas A / D\n"
-                "  - Saltar: Tecla W\n\n"
-                "MECÁNICA:\n"
-                "Ambos deben llegar a sus respectivas puertas. Si\n"
-                "alguno toca el veneno o su elemento opuesto,\n"
-                "¡la partida terminará para los dos!"
+                "🔥 Stella (Rojo):\n"
+                "    - Moverse: A (izquierda) / D (derecha)\n"
+                "    - Saltar: W (arriba)\n\n"
+                "💧 Galaxxy (Azul):\n"
+                "    - Moverse: Flecha izquierda / Flecha derecha\n"
+                "    - Saltar: Flecha arriba\n\n"
+                "OBJETIVO DEL JUEGO:\n\n"
+                "Ambos deben llegar a sus respectivas puertas para\n"
+                "completar los niveles. Si alguno de los personajes\n"
+                "toca el veneno, otro personaje, obstáculos o su\n"
+                "elemento opuesto, ¡la partida terminará para los dos!\n"
             )
             
             # Generamos el desplegable nativo de Arcade
             caja_mensaje = arcade.gui.UIMessageBox(
                 width=450,
-                height=380,
+                height=525,
                 message_text=mensaje_controles,
                 buttons=["Cerrar"]
             )
@@ -812,18 +813,23 @@ class Piraña(arcade.Sprite):
         self.change_x = 5  # Velocidad de nado
         self.muros = muros
 
-    def update(self, delta_time):
+    def update(self, delta_time, plataformas_moviles=None):
         # Movemos la piraña
         self.center_x += self.change_x
-        
-        # Comprobamos si se ha chocado con alguna pared
-        if arcade.check_for_collision_with_list(self, self.muros):
 
-            if len(self.muros) > 0:
-                # Si choca, retrocedemos un paso
-                self.center_x -= self.change_x
-                # Y cambiamos la dirección
-                self.change_x *= -1
+        choque_con_muro = arcade.check_for_collision_with_list(self, self.muros)
+        
+        choque_con_plataforma = False
+        if plataformas_moviles and len(plataformas_moviles) > 0:
+            choque_con_plataforma = arcade.check_for_collision_with_list(self, plataformas_moviles)
+        
+        # Comprobamos si se ha chocado con alguna muro o plataforma móvil para cambiar de dirección
+        if choque_con_muro or choque_con_plataforma:
+
+            # Si choca, retrocedemos un paso
+            self.center_x -= self.change_x
+            # Y cambiamos la dirección
+            self.change_x *= -1
     
             if self.change_x < 0:
                 self.texture = self.textura_izq
@@ -1271,7 +1277,15 @@ class Nivel3(Nivel):
 
         self.fireboy.physics_engine.update()
         self.watergirl.physics_engine.update()
-        self.lista_enemigos.update()
+        
+        # Obtenemos la lista de plataformas móviles
+        plataformas_actuales = arcade.SpriteList()
+        if "capa_plataforma_movil" in self.scene:
+            plataformas_actuales = self.scene["capa_plataforma_movil"]
+
+        # Actualizamos el movimiento de las pirañas pasando la lista de plataformas móviles
+        for piraña in self.lista_enemigos:
+            piraña.update(delta_time, plataformas_moviles = plataformas_actuales)
 
         # Colisiones entre los personajes
         if arcade.check_for_collision(self.fireboy, self.watergirl):

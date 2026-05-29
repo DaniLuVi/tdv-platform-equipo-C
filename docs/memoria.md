@@ -25,6 +25,7 @@ El objetivo principal era crear varios niveles donde la cooperación entre los d
 Para el correcto flujo del juego se ha estructurado una ventana principal sobre la que se intercambian distintas vistas (arcade.View) de forma eficaz.
 
 El programa comienza mostrando una vista inicial llamada MenuView en la que se muestra una pantalla de juego inicial con el título y la ambientación del videojuego. En el centro se muestran unos botones:
+
   1. El botón de "Iniciar partida" cambia a la vista Mapa en el que se muestra el mapa con los distintos niveles.
   2. El botón de "Continuar partida" cambia a la vista SeleccionPartida en la que se muestran las partidas guardadas que pueden ser cargadas para retomar su progreso
   3. El botón de "Ajustes" cambia a la vista SettingsView en la que se puede modificar el volumen de la música del juego
@@ -34,6 +35,7 @@ Pasamos a la vista Mapa, con el mapa de niveles. En esta vista se puede ver un f
 Las vistas de los distintos niveles se muestran con mas detalle en el archivo "gdd.md". La vista del nivel se muestra con el nivel en el centro de la pantalla, dejando dos franjas negras a ambos laterales de la pantalla. El recuadro del nivel se mantiene encajado en el centro geométrico de la pantalla mediante el uso de una cámara arcade.Camera2D fijada en el centro del escenario, logrando que el espacio restante se rellene automáticamente con franjas negras de forma limpia.
 
 Cuando en un nivel algún personaje muere o se consigue superar el nivel, aparece una vista mostrando la conclusión del intento del nivel y se muestran dos botones:
+
   1. Un botón de "Reiniciar Nivel"/"Siguiente Nivel" en el que (haciendo click o pulsando ENTER) se reinicia el nivel o se muestra el nivel inmediatemanete posterior
   2. Un botón de "Volver al mapa" para volver a la vista Mapa con el mapa de niveles
 
@@ -41,7 +43,29 @@ Cuando en un nivel algún personaje muere o se consigue superar el nivel, aparec
 
 Se ha hecho un uso bastante eficiente de las vistas en Arcade, como se ha podido explicar antes. Además, el código es eficiente y está bien organizado gracias al buen uso de los paradigmas soportados por el lenguaje Python.
 
-Se hace uso de la herencia para los personajes, Sprites y vistas de Arcade, y para los distintos niveles del juego (con una clase Nivel general que define cosas comunes para todos los niveles). Se implementa una clase abstracta Personaje (que hereda de arcade.Sprite) de la cual nacen las subclases Fireboy y Watergirl, polimorfismo que permite gestionar de manera independiente las reglas de supervivencia de cada elemento (inmunidad a lava o agua). De la misma forma, se diseñó una clase base Nivel(arcade.View) que centraliza la lógica común de captación de teclado, actualización de motores físicos y renderizado de la cámara, permitiendo que las clases específicas de cada nivel hereden toda esta infraestructura y solo tengan que encargarse de inicializar su propio mapa TMX.
+Se hace uso de la herencia para los personajes, Sprites y vistas de Arcade, y para los distintos niveles del juego (con una clase Nivel general que define cosas comunes para todos los niveles). Se implementa una clase abstracta Personaje (que hereda de arcade.Sprite) de la cual nacen las subclases Fireboy y Watergirl (los dos personajes principales del juego), polimorfismo que permite gestionar de manera independiente las reglas de supervivencia de cada elemento (inmunidad a lava o agua). De la misma forma, se diseñó una clase base Nivel(arcade.View) que centraliza la lógica común de captación de teclado, actualización de motores físicos y renderizado de la cámara, permitiendo que las clases específicas de cada nivel hereden toda esta infraestructura y solo tengan que encargarse de inicializar su propio mapa TMX.
+
+- Mecánicas a destacar:
+
+Para garantizar una experiencia de juego divertida y el uso de las herramientas del motor de Arcade, se han programado varias lógicas avanzadas:
+
+  1. Colisiones entre los personajes: 
+    Aunque inicialmente no se pensó realizar de esta forma, fue una idea que se implemento más adelante para que la jugabilidad se hiciese más compleja y se necesitara tomar algunas decisiones adicionales para conseguir que los dos personajes alcancen sus puertas correspondientes. Por ello, si ambos jugadores se chocan, el nivel no se supera y se debe comenzar de nuevo.
+
+  2. Inteligencia arficial para objetos (cocos en el nivel 2):
+    En el nivel de la playa (nivel 2) se ha añadido un algoritmo porr el que cada 1.75 segundos, un coco cae desde arriba del mapa hasta perderse por debajo de la pantalla. Estos cocos simplemente caen en línea recta vertical. Si uno de los cocos choca con uno de los personajes, el nivel no se supera y se tiene que reiniciar de nuevo.
+
+  3. Inteligencia Artificial para NPCs (las pirañas del nivel 3):
+    En el nivel acuático (nivel 3) se ha diseñado un algoritmo para que unas pirañas realicen un movimiento de patrulla autónomo. Estos NPCs detectan cuando se chocan con un muro o plataforma móvil, y cambian su dirección de movimiento. Además, se voltea su propia textura en tiempo real usando el método '.flip_left_right()' para optimizar el rendimiento gráfico. Si uno de los NPCs (piraña) toca a alguno de los dos personajes, el nivel no se supera y se debe de empezar de nuevo.
+
+  4. Proceso contrarreloj:
+    En el nivel del desierto (nivel 4), se ha diseñado un proceso por el que, para superar el nivel; además del objetivo de todos los niveles anteriores en los que cada personaje debe sortear obstáculos y llegar a sus puertas correspondientes, los personajes deben de recolectar todas las monedas que se encuentran distribuidas por el mapa antes de terminar el tiempo. Si se acaba el tiempo antes de que todo esto ocurra, el nivel queda como no superado.
+
+  5. Colisión con botones y palancas:
+
+    En el nivel final del juego (nivel 5) se han diseñado mecanismos de botones y palancas.
+    Los botones desactivan unas barreras determinadas siempre que el botón se encuentre pulsado. Cuando se deja de pulsar, la barrera vuelve a aparecer.
+    La palanca desactiva su barrera asociada cuando es pulsada, y no es necesario mantenerse en la posición para que la barrera se mantenga desactivada. Una vez se pulsa, ya la barrera queda desactivada hasta finalizar el nivel.
 
 ## 3. Sistema de guardado y cargado de datos
 
@@ -50,6 +74,7 @@ Para una correcta persistencia de datos se ha utilizado una estructura en format
 Se ha establecido un límite máximo de 10 partidas guardadas, para que la visualización en la vista del cargado de partidas no se cargue de muchos botones.
 
 Un ejemplo de una partida guardada directamente del JSON almacenado pordía ser: 
+
 {...,
     "Partida 3": {
         "1": "no_conseguido",
@@ -61,9 +86,7 @@ Un ejemplo de una partida guardada directamente del JSON almacenado pordía ser:
 ...
 }
 
-Para el cargado de partidas que ocurre en la vista SeleccionPartida, se muestran todas las partidas guardadas en distintos botones organizados en dos columnas, mediante un gestor de interfaz de Arcade (UIBoxLayout). 
-
-Para evitar la saturación visual, la interfaz distribuye dinámicamente los botones mediante contenedores UIBoxLayout. El algoritmo lee los índices de las partidas del JSON mediante un bucle enumerado: las primeras 5 partidas se inyectan en una columna vertical izquierda y las 5 restantes en una columna derecha, manteniendo el diseño perfectamente equilibrado y simétrico en el centro de la pantalla.
+Para el cargado de partidas que ocurre en la vista SeleccionPartida, se muestran todas las partidas guardadas en distintos botones organizados en dos columnas, mediante un gestor de interfaz de Arcade (UIBoxLayout). El algoritmo lee los índices de las partidas del JSON mediante un bucle enumerado: las primeras 5 partidas se inyectan en una columna vertical izquierda y las 5 restantes en una columna derecha, manteniendo el diseño perfectamente equilibrado y simétrico en el centro de la pantalla.
 
 Al pulsar cualquiera de esos botones, se carga la vista Mapa con el mapa de niveles en el que se muestre el progreso almacenado de forma efectiva con las imágenes del estado de cada nivel.
 
