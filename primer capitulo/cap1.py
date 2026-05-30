@@ -1,8 +1,6 @@
 import arcade
 import os
 
-from paso_entre_niveles import CLASES_NIVELES
-
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 800
 ESCALA_MAPA = 0.35
