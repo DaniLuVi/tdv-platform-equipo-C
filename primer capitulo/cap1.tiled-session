@@ -1,0 +1,133 @@
+{
+    "activeFile": "",
+    "expandedProjectPaths": [
+    ],
+    "file.lastUsedOpenFilter": "Todos los archivos (*)",
+    "fileStates": {
+        "1.tmx": {
+            "scale": 0.39521484375,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 1023.493946132938,
+                "y": 1023.493946132938
+            }
+        },
+        "1.tsx": {
+            "scaleInDock": 0.24,
+            "scaleInEditor": 1
+        },
+        "10.tmx": {
+            "scale": 0.39521484375,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 1023.493946132938,
+                "y": 1023.493946132938
+            }
+        },
+        "11.tmx": {
+            "scale": 0.39521484375,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 1023.493946132938,
+                "y": 1023.493946132938
+            }
+        },
+        "2.tmx": {
+            "scale": 0.39521484375,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 1023.493946132938,
+                "y": 1023.493946132938
+            }
+        },
+        "3.tmx": {
+            "scale": 0.39521484375,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 1023.493946132938,
+                "y": 1023.493946132938
+            }
+        },
+        "4.tmx": {
+            "scale": 0.39521484375,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 1023.493946132938,
+                "y": 1023.493946132938
+            }
+        },
+        "5.tmx": {
+            "scale": 0.39521484375,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 1023.493946132938,
+                "y": 1023.493946132938
+            }
+        },
+        "6.tmx": {
+            "scale": 0.39521484375,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 1023.493946132938,
+                "y": 1023.493946132938
+            }
+        },
+        "7.tmx": {
+            "scale": 0.39521484375,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 1023.493946132938,
+                "y": 1023.493946132938
+            }
+        },
+        "8.tmx": {
+            "scale": 0.39521484375,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 1023.493946132938,
+                "y": 1023.493946132938
+            }
+        },
+        "9.tmx": {
+            "scale": 0.39521484375,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 1023.493946132938,
+                "y": 1023.493946132938
+            }
+        },
+        "sin nombre.tmx": {
+            "scale": 0.39521484375,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 1023.493946132938,
+                "y": 1023.493946132938
+            }
+        },
+        "sin nombre2.tmx": {
+            "scale": 0.39521484375,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 1023.493946132938,
+                "y": 1023.493946132938
+            }
+        }
+    },
+    "last.imagePath": "C:/Users/Usuario/Pictures/primer capitulo",
+    "map.height": 1,
+    "map.lastUsedFormat": "tmx",
+    "map.tileHeight": 2048,
+    "map.tileWidth": 2048,
+    "map.width": 1,
+    "openFiles": [
+    ],
+    "project": "cap1.tiled-project",
+    "recentFiles": [
+        "1.tsx"
+    ],
+    "tileset.lastUsedFormat": "tsx",
+    "tileset.tileSize": {
+        "height": 2048,
+        "width": 2048
+    }
+}
