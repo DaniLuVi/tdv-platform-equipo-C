@@ -8,20 +8,19 @@ Cada personaje posee inmunidad frente a un elemento concreto, pero también pres
 
 # Galaxy (Chico / Azul)
 
-Galaxy es uno de los protagonistas principales del videojuego. Representa el elemento fuego y destaca por su resistencia frente a escenarios volcánicos y zonas peligrosas relacionadas con la lava.
+Galaxy es uno de los protagonistas principales del videojuego. Representa el elemento agua y destaca por su capacidad para atravesar escenarios acuáticos y zonas inundadas sin sufrir daño.
 
-Su apariencia está asociada al color azul y está pensado para atravesar áreas que resultarían mortales para Stella. Gracias a sus habilidades, Galaxy puede acceder a zonas especiales del mapa y activar mecanismos situados en lugares de alta temperatura.
+Su apariencia está asociada al color azul y está pensado para acceder a lugares que resultarían mortales para Stella. Gracias a sus habilidades, Galaxy puede activar mecanismos submarinos y abrir caminos seguros en niveles con gran presencia de agua.
 
 ## Propiedades y habilidades
 
-Galaxy posee inmunidad total a la lava, por lo que puede caminar, permanecer e incluso saltar sobre superficies de este elemento sin sufrir ningún tipo de daño.
+Galaxy posee inmunidad total al agua, por lo que puede caminar, nadar y desplazarse por superficies acuáticas sin sufrir ningún tipo de daño.
 
 Sin embargo, esta ventaja también implica importantes debilidades:
-- El contacto con agua provoca su muerte instantánea.
-- Los charcos de veneno morado también son letales.
-- Si cae en una zona acuática o toca superficies húmedas diseñadas como peligrosas, el jugador deberá reiniciar desde el último punto de control.
 
-Estas características obligan al jugador a analizar cuidadosamente el entorno antes de avanzar, evitando zonas incompatibles con las habilidades de Galaxy.
+- El contacto con lava provoca su muerte instantánea.
+- Los charcos de veneno verde también son letales.
+- Si cae en zonas volcánicas o toca superficies ardientes diseñadas como peligrosas, el jugador deberá reiniciar desde el último punto de control.
 
 
 ## Controles
@@ -39,29 +38,29 @@ Los controles han sido diseñados para ofrecer un movimiento fluido y preciso, e
 ## Rol dentro de la jugabilidad
 
 Galaxy será esencial en niveles donde existan:
-- Ríos de lava.
-- Plataformas incendiadas.
-- Interruptores rodeados de fuego.
-- Caminos inaccesibles para Stella.
 
-El jugador deberá utilizar sus habilidades para desbloquear caminos, activar mecanismos o ayudar a Stella
+- Grandes masas de agua.
+- Plataformas sumergidas.
+- Interruptores acuáticos.
+- Caminos inundados inaccesibles para Stella.
+
+El jugador deberá utilizar sus habilidades para activar mecanismos, desbloquear rutas seguras y ayudar a Stella a avanzar a través de los distintos escenarios del juego.
 
 # Stella (Chica / Roja)
 
-Stella es una de las protagonistas principales del videojuego. Representa el elemento agua y destaca por su capacidad para atravesar escenarios acuáticos y zonas inundadas sin sufrir daño.
+Stella es una de las protagonistas principales del videojuego. Representa el elemento fuego y destaca por su resistencia frente a escenarios volcánicos y zonas peligrosas relacionadas con la lava.
 
-Su apariencia está asociada al color rojo y está diseñada para acceder a lugares imposibles para Galaxy. Gracias a sus habilidades, Stella puede activar mecanismos submarinos y abrir caminos seguros en niveles con gran presencia de agua.
+Su apariencia está asociada al color rojo y está diseñada para atravesar áreas que resultarían mortales para Galaxy. Gracias a sus habilidades, Stella puede acceder a zonas especiales del mapa y activar mecanismos situados en lugares de alta temperatura.
 
 ## Propiedades y habilidades
 
-Stella posee inmunidad total al agua, por lo que puede caminar, nadar y desplazarse por superficies acuáticas sin sufrir ningún tipo de daño.
+Stella posee inmunidad total a la lava, por lo que puede caminar, permanecer e incluso saltar sobre superficies de este elemento sin sufrir ningún tipo de daño.
 
 Sin embargo, esta ventaja también implica importantes debilidades:
-- El contacto con lava provoca su muerte instantánea.
-- Los charcos de veneno morado también son letales.
-- Si cae en zonas volcánicas o toca superficies ardientes diseñadas como peligrosas, el jugador deberá reiniciar desde el último punto de control.
 
-Estas características obligan al jugador a planificar cuidadosamente cada movimiento, evitando zonas incompatibles con las habilidades de Stella.
+- El contacto con agua provoca su muerte instantánea.
+- Los charcos de veneno verde también son letales.
+- Si cae en una zona acuática o toca superficies húmedas diseñadas como peligrosas, el jugador deberá reiniciar desde el último punto de control.
 
 ## Controles
 
@@ -78,12 +77,13 @@ Los controles han sido diseñados para ofrecer un movimiento preciso y dinámico
 ## Rol dentro de la jugabilidad
 
 Stella será esencial en niveles donde existan:
-- Grandes masas de agua.
-- Plataformas sumergidas.
-- Interruptores acuáticos.
-- Caminos inundados inaccesibles para Galaxy.
 
-El jugador deberá utilizar sus habilidades para activar mecanismos, desbloquear rutas seguras y ayudar a Galaxy a avanzar a través de los distintos escenarios del juego.
+- Ríos de lava.
+- Plataformas incendiadas.
+- Interruptores rodeados de fuego.
+- Caminos inaccesibles para Galaxy.
+
+El jugador deberá utilizar sus habilidades para desbloquear caminos, activar mecanismos o ayudar a Galaxy.
 
 # 2. Mecánicas de Juego (Gameplay)
 
@@ -124,7 +124,7 @@ El videojuego incluye distintos tipos de fluidos relacionados con los elementos 
 - Galaxy puede atravesar lava sin sufrir daño.
 - Stella puede atravesar agua sin sufrir daño.
 - Si un personaje entra en contacto con el elemento contrario, muere instantáneamente.
-- Ambos personajes son vulnerables al veneno morado.
+- Ambos personajes son vulnerables al veneno verde.
 
 Estas mecánicas obligan al jugador a analizar cuidadosamente cada zona antes de avanzar.
 
@@ -306,7 +306,7 @@ A diferencia de niveles anteriores, aquí aparecen peligros que afectan por igua
 
 Entre ellos destacan:
 - Arenas movedizas.
-- Charcos de veneno morado.
+- Charcos de veneno verde.
 - Pinchos ocultos.
 - Plataformas frágiles.
 
