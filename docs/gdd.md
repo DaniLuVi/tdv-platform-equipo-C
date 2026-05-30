@@ -10,7 +10,7 @@ Cada personaje posee inmunidad frente a un elemento concreto, pero también pres
 
 Galaxy es uno de los protagonistas principales del videojuego. Representa el elemento agua y destaca por su capacidad para atravesar escenarios acuáticos y zonas inundadas sin sufrir daño.
 
-Su apariencia está asociada al color azul y está pensado para acceder a lugares que resultarían mortales para Stella. Gracias a sus habilidades, Galaxy puede activar mecanismos submarinos y abrir caminos seguros en niveles con gran presencia de agua.
+Su apariencia está asociada al color azul y está pensado para acceder a lugares que resultarían mortales para Stella. Gracias a sus habilidades, Galaxy puede abrirse caminos seguros en niveles con gran presencia de agua.
 
 ## Propiedades y habilidades
 
@@ -20,7 +20,7 @@ Sin embargo, esta ventaja también implica importantes debilidades:
 
 - El contacto con lava provoca su muerte instantánea.
 - Los charcos de veneno verde también son letales.
-- Si cae en zonas volcánicas o toca superficies ardientes diseñadas como peligrosas, el jugador deberá reiniciar desde el último punto de control.
+- Si cae en zonas volcánicas o toca superficies diseñadas como peligrosas, el jugador deberá reiniciar desde el último punto de control.
 
 
 ## Controles
@@ -40,7 +40,6 @@ Los controles han sido diseñados para ofrecer un movimiento fluido y preciso, e
 Galaxy será esencial en niveles donde existan:
 
 - Grandes masas de agua.
-- Plataformas sumergidas.
 - Interruptores acuáticos.
 - Caminos inundados inaccesibles para Stella.
 
@@ -60,7 +59,7 @@ Sin embargo, esta ventaja también implica importantes debilidades:
 
 - El contacto con agua provoca su muerte instantánea.
 - Los charcos de veneno verde también son letales.
-- Si cae en una zona acuática o toca superficies húmedas diseñadas como peligrosas, el jugador deberá reiniciar desde el último punto de control.
+- Si cae en una zona acuática o toca superficies diseñadas como peligrosas, el jugador deberá reiniciar desde el último punto de control.
 
 ## Controles
 
@@ -79,7 +78,6 @@ Los controles han sido diseñados para ofrecer un movimiento preciso y dinámico
 Stella será esencial en niveles donde existan:
 
 - Ríos de lava.
-- Plataformas incendiadas.
 - Interruptores rodeados de fuego.
 - Caminos inaccesibles para Galaxy.
 
@@ -96,8 +94,7 @@ El núcleo principal del videojuego se basa en la cooperación entre Galaxy y St
 Los dos personajes se encuentran activos al mismo tiempo dentro del mismo mapa. El jugador deberá controlar a ambos de forma coordinada para avanzar correctamente.
 
 ### Características principales
-- Los personajes pueden atravesarse entre sí.
-- No existen colisiones entre Galaxy y Stella.
+- Los personajes no pueden tocarse entre ellos. Si eso ocurre, el nivel se reinicia.
 - La cooperación es obligatoria para completar los niveles.
 - Cada personaje posee habilidades únicas según su elemento.
 
@@ -107,7 +104,7 @@ Los dos personajes se encuentran activos al mismo tiempo dentro del mismo mapa. 
 
 ## Monedas
 
-A lo largo de los niveles aparecerán monedas coleccionables repartidas por el mapa.
+En el nivel del desierto (nivel 4) aparecen monedas coleccionables repartidas por el mapa.
 
 ### Funciones
 - Pueden ser recogidas por cualquiera de los personajes.
@@ -121,8 +118,8 @@ A lo largo de los niveles aparecerán monedas coleccionables repartidas por el m
 El videojuego incluye distintos tipos de fluidos relacionados con los elementos principales.
 
 ### Funcionamiento
-- Galaxy puede atravesar lava sin sufrir daño.
-- Stella puede atravesar agua sin sufrir daño.
+- Galaxy puede atravesar agua sin sufrir daño.
+- Stella puede atravesar lava sin sufrir daño.
 - Si un personaje entra en contacto con el elemento contrario, muere instantáneamente.
 - Ambos personajes son vulnerables al veneno verde.
 
@@ -132,11 +129,10 @@ Estas mecánicas obligan al jugador a analizar cuidadosamente cada zona antes de
 
 ## Obstáculos Dinámicos
 
-En determinados niveles aparecerán obstáculos que se generan dinámicamente durante la partida.
+En el nivel de la playa (nivel 2) aparecen obstáculos que se generan dinámicamente durante la partida.
 
 ### Ejemplos
 - Cocos.
-- Meteoritos.
 - Objetos que caen verticalmente desde la parte superior del mapa.
 
 ### Características
@@ -153,8 +149,8 @@ Esta mecánica aumenta la dificultad y la tensión en ciertos escenarios.
 Para completar un nivel, ambos personajes deben llegar a sus respectivas puertas de salida.
 
 ### Objetivos
-- Galaxy debe alcanzar la Puerta de Fuego.
-- Stella debe alcanzar la Puerta de Agua.
+- Galaxy debe alcanzar la Puerta de Agua.
+- Stella debe alcanzar la Puerta de Fuego.
 
 Solo cuando ambos personajes llegan correctamente a sus puertas se desbloquea el siguiente nivel.
 
@@ -168,6 +164,8 @@ El nivel se considera perdido si cualquiera de los personajes muere durante la p
 - Contacto con un elemento hostil.
 - Caída en trampas.
 - Impacto con obstáculos dinámicos.
+- Impacto con NPCs (pirañas).
+- Impacto entre los dos personajes.
 
 Cuando esto ocurre, el jugador deberá reiniciar el nivel desde el último punto de control o desde el inicio del escenario.
 
@@ -203,7 +201,7 @@ Durante este nivel aparecen:
 - Saltos cortos.
 - Primeros charcos de lava.
 - Pequeñas zonas de agua.
-- Interruptores básicos.
+- Zonas de veneno.
 
 Los obstáculos están diseñados para ser fáciles de entender y permitir que el jugador se familiarice con los controles sin una dificultad excesiva.
 
@@ -240,10 +238,9 @@ Esta mecánica añade presión constante y aumenta la tensión de la partida.
 ## Otros obstáculos
 
 Además de los cocos, el nivel incluye:
-- Plataformas móviles sencillas.
-- Zonas de agua y lava combinadas.
+- Zonas de agua, lava y veneno combinadas.
 - Saltos más largos.
-- Trampas temporizadas.
+- Obstáculos temporizadas.
 
 ## Dificultad
 
@@ -257,28 +254,19 @@ La dificultad aumenta ligeramente respecto al primer nivel, ya que el jugador de
 
 El tercer nivel se desarrolla en una gran cueva submarina llena de lagos profundos, cascadas y estructuras inundadas. Predominan los colores azules y verdes, creando una atmósfera húmeda y misteriosa.
 
-El escenario contiene grandes masas de agua que dificultan enormemente el avance de Galaxy.
-
 ## Objetivo del nivel
 
-En este nivel Stella adquiere un papel protagonista, ya que sus habilidades son fundamentales para avanzar.
+Este nivel introduce el uso de NPCs: las pirañas. Serán un elemento adicional a esquivar.
 
-El jugador deberá utilizar a Stella para:
-- Activar mecanismos submarinos.
-- Abrir caminos seguros.
-- Elevar plataformas.
-- Crear rutas secas para Galaxy.
+Además en este nivel se introduce el concepto de las plataformas móviles, que van subiendo y bajando cada cierto tiempo.
 
 ## Mecánicas principales
 
 Las mecánicas introducidas incluyen:
 - Plataformas elevables.
-- Interruptores acuáticos.
 - Corrientes de agua.
-- Puertas temporales.
 - Plataformas flotantes.
-
-Galaxy dependerá constantemente de Stella para sobrevivir, reforzando así el componente cooperativo del videojuego.
+- Enemgigos patrulla como NPCs.
 
 ## Dificultad
 
@@ -300,17 +288,16 @@ El entorno transmite aislamiento y dificultad.
 
 Este nivel busca poner a prueba la precisión del jugador mediante trampas extremadamente peligrosas.
 
-## Mecánica principal: peligros neutrales
+Además, se incluye un estado mayor de estrés, ya que para completar el nivel se debe superar una prueba contrarreloj recogiendo todas las monedas distribuidas por el nivel.
 
-A diferencia de niveles anteriores, aquí aparecen peligros que afectan por igual a Galaxy y Stella.
+## Mecánica principal:
 
 Entre ellos destacan:
-- Arenas movedizas.
-- Charcos de veneno verde.
-- Pinchos ocultos.
-- Plataformas frágiles.
+- Zonas de agua, lava y veneno distribuidas.
+- Monedas a recoger.
+- Plataformas fijas con saltos más complicados.
 
-Esto elimina la ventaja elemental de ambos personajes y obliga al jugador a depender únicamente de su habilidad.
+Esto elimina la sensación de los otros niveles de tener toda la calma y el tiempo para completar el nivel con éxito.
 
 ## Diseño del nivel
 
@@ -318,14 +305,13 @@ El escenario contiene:
 - Saltos largos y precisos.
 - Plataformas estrechas.
 - Caminos alternativos.
-- Trampas ocultas.
-- Secciones con tiempo limitado.
+- Tiempo contrarreloj para completarlo.
 
 Cada error puede provocar la muerte instantánea de cualquiera de los personajes.
 
 ## Dificultad
 
-La dificultad aumenta considerablemente, convirtiéndose en uno de los niveles más exigentes del juego debido a la precisión requerida.
+La dificultad aumenta considerablemente, convirtiéndose en uno de los niveles más exigentes del juego debido a la precisión requerida, el escaso tiempo para completarlo y el movimiento alrededor de todo el nivel de los personajes.
 
 ---
 
@@ -335,29 +321,28 @@ La dificultad aumenta considerablemente, convirtiéndose en uno de los niveles m
 
 El último nivel se desarrolla en un gigantesco castillo volcánico rodeado de lava, fuego y estructuras metálicas. El cielo oscuro, las erupciones volcánicas y los efectos de calor crean una atmósfera épica y peligrosa.
 
+Es un escenario bastante oscuro, por lo que se recomienda para este nivel que el nivel del brillo del ordenador sea bastante alto y poder ver bien todos los obstáculos.
+
 Este escenario representa el desafío final del videojuego.
 
 ## Objetivo del nivel
 
-Galaxy toma el papel principal durante este nivel, ya que es el único capaz de atravesar las enormes zonas de lava que bloquean el camino.
+En este nivel es crucial la cooperación entre los dos personajes, ya que deberán de activar/desactivar algunos obstáculos mediante palancas y botones. Esto hace que para que uno de los personajes pueda avanzar, el otro deba realizar un movimiento que le permita abrir el camino.
 
 El objetivo será:
-- Activar mecanismos ocultos entre la lava.
-- Crear plataformas para Stella.
-- Desactivar trampas ardientes.
+- Cooperación entre ambos personajes.
+- Desactivar los obstáculos existentes.
 - Abrir las puertas finales del castillo.
 
 ## Mecánicas principales
 
 El nivel combina todas las mecánicas aprendidas anteriormente:
-- Plataformas móviles complejas.
-- Lava en movimiento.
-- Interruptores temporales.
+- Plataformas fijas complejas.
+- Zonas de lava, agua y veneno.
+- Botones y palancas.
 - Trampas sincronizadas.
 - Saltos de precisión.
 - Secciones de cooperación obligatoria.
-
-Galaxy deberá avanzar primero en numerosas ocasiones para permitir que Stella pueda continuar sin morir.
 
 ## Clímax y final del juego
 
@@ -386,12 +371,12 @@ Cada protagonista posee una identidad visual claramente diferenciada según su e
 ### Galaxy
 - Asociado a colores fríos.
 - Predominan tonos azules y cian.
-- Su diseño representa el elemento fuego/lava dentro del juego.
+- Su diseño representa el elemento agua dentro del juego.
 
 ### Stella
 - Asociada a colores cálidos.
 - Predominan tonos rojos y naranjas.
-- Su diseño representa el elemento agua.
+- Su diseño representa el elemento fuego/lava dentro del juego.
 
 El contraste entre ambos personajes permite al jugador identificarlos rápidamente y comprender sus habilidades dentro de cada nivel.
 
@@ -407,7 +392,7 @@ Cada nivel cuenta con una ambientación visual propia para aportar variedad y se
 - **La Playa:** colores vivos, arena y cielo despejado.
 - **Nivel Acuático:** ambientes azules y estructuras inundadas.
 - **El Desierto:** dunas, ruinas y tonos cálidos.
-- **Castillo de Fuego:** lava, fuego y estructuras volcánicas.
+- **Castillo de Fuego:** fuego y colores oscuros, dando una gran sensación de oscuridad.
 
 Los cambios de escenario ayudan a diferenciar las mecánicas y aumentan la sensación de aventura.
 
@@ -440,19 +425,3 @@ La música del juego se encuentra en formato `.mp3` y cambia dependiendo del con
 - Música de misterio para el mapa de niveles.
 - Pistas rápidas y tensas durante las fases de acción.
 - Sonidos ambientales específicos para cada escenario.
-
----
-
-# Efectos de Sonido
-
-El videojuego incorpora efectos sonoros para mejorar la sensación de interacción con el entorno.
-
-## Algunos ejemplos
-- Saltos.
-- Recolección de monedas.
-- Activación de mecanismos.
-- Impactos y colisiones.
-- Sonidos de lava y agua.
-- Efectos de derrota y victoria.
-
-Estos sonidos permiten al jugador recibir información inmediata sobre lo que ocurre en pantalla y aportan mayor dinamismo a la experiencia de juego.
