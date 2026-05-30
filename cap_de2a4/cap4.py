@@ -1,8 +1,6 @@
 import arcade
 import os
 
-from paso_entre_niveles import CLASES_NIVELES
-
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 800
 ESCALA_MAPA = 0.35
@@ -20,6 +18,7 @@ class Galeria(arcade.Window):
         ]
 
         self.mapas.sort(key=lambda x: int(os.path.splitext(os.path.basename(x))[0]))
+        self.mapas = self.mapas[4:6]
 
         self.indice = 0
 
@@ -45,12 +44,9 @@ class Galeria(arcade.Window):
         self.scene.draw()
 
     def on_mouse_press(self, x, y, button, modifiers):
-        self.indice = (self.indice + 1) 
+        self.indice = (self.indice + 1)
         self.cargar_mapa()
 
 if __name__ == "__main__":
     Galeria()
     arcade.run()
-
-
-    
