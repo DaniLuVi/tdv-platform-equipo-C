@@ -2041,4 +2041,3 @@ if __name__ == "__main__":
     menu = MenuView()
     window.show_view(menu)
     arcade.run()
-    
