@@ -996,7 +996,10 @@ class VistaFinNivel(arcade.View):
 
         @boton_mapa.event("on_click")
         def on_click_mapa(event):
-            self.window.show_view(Mapa())
+            if self.nivel == 5:
+                self.window.show_view(VistaHistoriaFinal())
+            else:
+                self.window.show_view(Mapa())
 
         # Centrar la caja en la pantalla
         anchor = arcade.gui.UIAnchorLayout()
