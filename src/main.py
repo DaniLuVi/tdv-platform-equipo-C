@@ -246,13 +246,14 @@ class MenuView(arcade.View):
         self.fondo.height = self.window.height
         self.fondo.center_x = self.window.width / 2
         self.fondo.center_y = self.window.height / 2"""
+        cx = self.window.width / 2
         escala_pj = self.window.height / 1080.0
         self.sprite_1.scale = 1.0 * escala_pj
         self.sprite_2.scale = 1.0 * escala_pj
 
-        self.sprite_1.center_x = self.window.width * 0.17
+        self.sprite_1.center_x = cx - 450
         self.sprite_1.bottom = self.window.height * 0.05
-        self.sprite_2.center_x = self.window.width * 0.72
+        self.sprite_2.center_x = cx + 350
         self.sprite_2.bottom = self.window.height * 0.05
 
         if not getattr(self.window, 'reproductor_menu', None) or not self.window.reproductor_menu.playing:
