@@ -241,6 +241,14 @@ class MenuView(arcade.View):
     def on_show_view(self):
         arcade.set_background_color(arcade.color.DARK_BLUE_GRAY)
 
+        self.fondo.width = self.window.width
+        self.fondo.height = self.window.height
+        self.fondo.center_x = self.window.width / 2
+        self.fondo.center_y = self.window.height / 2
+
+        self.sprite_1.center_x = self.window.width * 0.17
+        self.sprite_2.center_x = self.window.width * 0.72
+
         if not getattr(self.window, 'reproductor_menu', None) or not self.window.reproductor_menu.playing:
             self.window.reproductor_menu = arcade.play_sound(self.musica_inicio, volume=self.window.volumen, loop=True)
 
@@ -410,8 +418,9 @@ class SettingsView(arcade.View):
                          arcade.color.WHITE, font_size = 35, anchor_x="center")
 
         # Botón Volver
-        arcade.draw_lrbt_rectangle_outline(cx - 60, cx + 60, 90, 130, arcade.color.WHITE, border_width=2)
-        arcade.draw_text("VOLVER", cx, 110, arcade.color.WHITE, font_size=15, anchor_x="center", anchor_y="center")
+        y_volver = self.window.height * 0.15
+        arcade.draw_lrbt_rectangle_outline(cx - 60, cx + 60, y_volver - 20, y_volver + 20, arcade.color.WHITE, border_width=2)
+        arcade.draw_text("VOLVER", cx, y_volver, arcade.color.WHITE, font_size=15, anchor_x="center", anchor_y="center")
 
         self.manager.draw()
 
@@ -431,7 +440,8 @@ class SettingsView(arcade.View):
                 self.window.reproductor_menu.volume = self.window.volumen
 
         # Clic en VOLVER
-        elif cx - 60 < x < cx + 60 and 90 < y < 130:
+        y_volver = self.window.height * 0.15
+        if cx - 60 < x < cx + 60 and y_volver - 20 < y < y_volver + 20:
             self.window.show_view(MenuView())
 
     def on_key_press(self, key, modifiers):
@@ -467,12 +477,16 @@ class Mapa(arcade.View):
     def __init__(self):
         super().__init__()
 
+        # Obtenemos el ancho y alto de la ventana dinámicamente
+        aw = arcade.get_window().width
+        ah = arcade.get_window().height
+
         self.niveles = {
-           1: VistaNivelEnMapa(nivel=1, x=250, y=500, conexiones=[2]),
-           2: VistaNivelEnMapa(nivel=2, x=500, y=350, conexiones=[1, 3]),
-           3: VistaNivelEnMapa(nivel=3, x=750, y=500, conexiones=[2, 4]),
-           4: VistaNivelEnMapa(nivel=4, x=1000, y=350, conexiones=[3, 5]),
-           5: VistaNivelEnMapa(nivel=5, x=1250, y=500, conexiones=[4]),
+           1: VistaNivelEnMapa(nivel=1, x=aw * 0.20, y=ah * 0.55, conexiones=[2]),
+           2: VistaNivelEnMapa(nivel=2, x=aw * 0.35, y=ah * 0.40, conexiones=[1, 3]),
+           3: VistaNivelEnMapa(nivel=3, x=aw * 0.50, y=ah * 0.55, conexiones=[2, 4]),
+           4: VistaNivelEnMapa(nivel=4, x=aw * 0.65, y=ah * 0.40, conexiones=[3, 5]),
+           5: VistaNivelEnMapa(nivel=5, x=aw * 0.80, y=ah * 0.55, conexiones=[4])
         }
 
         self.fondo = arcade.Sprite(os.path.join("assets", "imgs_niveles_en_mapa", "fondo.png"), scale = 0.9)
@@ -657,6 +671,9 @@ class VistaHistoria(arcade.View):
         self.numero_nivel = numero_nivel
         self.manager = arcade.gui.UIManager()
 
+        self.tam_caja = min(800, arcade.get_window().height * 0.85)
+        self.escala_extra = self.tam_caja / 800.0
+
         try:
             if (numero_nivel == 1):
                 todos_los_mapas = [
@@ -720,8 +737,8 @@ class VistaHistoria(arcade.View):
             child=self.boton_siguiente,
             anchor_x="center_x",
             anchor_y="center_y",
-            align_x=350,
-            align_y=-350
+            align_x=(self.tam_caja / 2) - 60,
+            align_y=-(self.tam_caja / 2) + 60
         )
         self.manager.add(self.anclaje)
 
@@ -734,7 +751,7 @@ class VistaHistoria(arcade.View):
             alto = tile_map.height * tile_map.tile_height
 
             self.camara.position = (ancho / 2, alto / 2)
-            self.camara.zoom = 0.35 # La escala que usabas en cap1.py
+            self.camara.zoom = 0.35 * self.escala_extra
         except Exception as e:
             print(f"Error cargando mapa de historia: {e}")
             self.scene = None
@@ -754,7 +771,7 @@ class VistaHistoria(arcade.View):
 
         # Dibujamos el recuadro negro centrado de 800x800 para el cómic
         cx, cy = self.window.width / 2, self.window.height / 2
-        recuadro_panel = arcade.rect.LBWH(cx - 400, cy - 400, 800, 800)
+        recuadro_panel = arcade.rect.LBWH(cx - self.tam_caja/2, cy - self.tam_caja/2, self.tam_caja, self.tam_caja)
         arcade.draw_rect_filled(recuadro_panel, arcade.color.BLACK)
         arcade.draw_rect_outline(recuadro_panel, arcade.color.WHITE, border_width=4)
 
@@ -775,6 +792,9 @@ class VistaHistoriaFinal(arcade.View):
         super().__init__()
 
         self.manager = arcade.gui.UIManager()
+
+        self.tam_caja = min(800, arcade.get_window().height * 0.85)
+        self.escala_extra = self.tam_caja / 800.0
 
         try:
             todos_los_mapas = [
@@ -817,8 +837,8 @@ class VistaHistoriaFinal(arcade.View):
             child=self.boton_siguiente,
             anchor_x="center_x",
             anchor_y="center_y",
-            align_x=350,
-            align_y=-350
+            align_x=(self.tam_caja / 2) - 60,
+            align_y=-(self.tam_caja / 2) + 60
         )
         self.manager.add(self.anclaje)
 
@@ -829,7 +849,7 @@ class VistaHistoriaFinal(arcade.View):
             ancho = tile_map.width * tile_map.tile_width
             alto = tile_map.height * tile_map.tile_height
             self.camara.position = (ancho / 2, alto / 2)
-            self.camara.zoom = 0.35 
+            self.camara.zoom = 0.35 * self.escala_extra
         except Exception as e:
             print(f"Error cargando mapa de historia final: {e}")
             self.scene = None
@@ -844,7 +864,7 @@ class VistaHistoriaFinal(arcade.View):
         arcade.set_background_color(arcade.color.DARK_BLUE_GRAY)
 
         cx, cy = self.window.width / 2, self.window.height / 2
-        recuadro_panel = arcade.rect.LBWH(cx - 400, cy - 400, 800, 800)
+        recuadro_panel = arcade.rect.LBWH(cx - self.tam_caja/2, cy - self.tam_caja/2, self.tam_caja, self.tam_caja)
         arcade.draw_rect_filled(recuadro_panel, arcade.color.BLACK)
         arcade.draw_rect_outline(recuadro_panel, arcade.color.WHITE, border_width=4)
 
@@ -996,7 +1016,7 @@ class VistaFinNivel(arcade.View):
 
         @boton_mapa.event("on_click")
         def on_click_mapa(event):
-            if self.nivel == 5:
+            if self.nivel == 5 and self.color == arcade.color.GREEN:
                 self.window.show_view(VistaHistoriaFinal())
             else:
                 self.window.show_view(Mapa())
@@ -1176,6 +1196,10 @@ class Nivel(arcade.View):
 
     def on_show_view(self): 
         arcade.set_background_color(arcade.color.BLACK)
+
+        escala_pantalla = self.window.height / self.alto_logico
+        self.camera.zoom = escala_pantalla
+
         self.setup()
 
     # ---------------- CONTROLES ----------------
