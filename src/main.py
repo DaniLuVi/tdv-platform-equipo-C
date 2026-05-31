@@ -215,23 +215,24 @@ class MenuView(arcade.View):
         # Creamos la lista para manejar los sprites
         self.lista_sprites = arcade.SpriteList()
 
-        self.fondo = arcade.Sprite(os.path.join("assets", "fondo_inicio.png"))
-        self.fondo.width = SCREEN_WIDTH
+        #self.fondo = arcade.Sprite(os.path.join("assets", "fondo_inicio.png"))
+        self.textura_fondo = arcade.load_texture(os.path.join("assets", "fondo_inicio.png"))
+        """self.fondo.width = SCREEN_WIDTH
         self.fondo.height = SCREEN_HEIGHT
         self.fondo.center_x = SCREEN_WIDTH / 2
         self.fondo.center_y = SCREEN_HEIGHT / 2
-        self.lista_sprites.append(self.fondo)
+        self.lista_sprites.append(self.fondo)"""
 
         # --- SPRITE 1 (Izquierda) ---
         self.sprite_1 = arcade.Sprite("chico.png", scale=1.0)
-        self.sprite_1.center_x = SCREEN_WIDTH * 0.17  # 17% del ancho (izquierda)
-        self.sprite_1.bottom = 20    # Suelo
+        #self.sprite_1.center_x = SCREEN_WIDTH * 0.17  # 17% del ancho (izquierda)
+        #self.sprite_1.bottom = 20    # Suelo
         self.lista_sprites.append(self.sprite_1)
 
         # --- SPRITE 2 (Derecha) ---
         self.sprite_2 = arcade.Sprite("chica.png", scale=1.0)
-        self.sprite_2.center_x = SCREEN_WIDTH * 0.72  # 72% del ancho (derecha)
-        self.sprite_2.bottom = 20    # Suelo
+        #self.sprite_2.center_x = SCREEN_WIDTH * 0.72  # 72% del ancho (derecha)
+        #self.sprite_2.bottom = 20    # Suelo
         self.lista_sprites.append(self.sprite_2)
 
         # Cargamos el sonido de la pantalla principal
@@ -241,13 +242,18 @@ class MenuView(arcade.View):
     def on_show_view(self):
         arcade.set_background_color(arcade.color.DARK_BLUE_GRAY)
 
-        self.fondo.width = self.window.width
+        """self.fondo.width = self.window.width
         self.fondo.height = self.window.height
         self.fondo.center_x = self.window.width / 2
-        self.fondo.center_y = self.window.height / 2
+        self.fondo.center_y = self.window.height / 2"""
+        escala_pj = self.window.height / 1080.0
+        self.sprite_1.scale = 1.0 * escala_pj
+        self.sprite_2.scale = 1.0 * escala_pj
 
         self.sprite_1.center_x = self.window.width * 0.17
+        self.sprite_1.bottom = self.window.height * 0.05
         self.sprite_2.center_x = self.window.width * 0.72
+        self.sprite_2.bottom = self.window.height * 0.05
 
         if not getattr(self.window, 'reproductor_menu', None) or not self.window.reproductor_menu.playing:
             self.window.reproductor_menu = arcade.play_sound(self.musica_inicio, volume=self.window.volumen, loop=True)
@@ -262,6 +268,9 @@ class MenuView(arcade.View):
 
     def on_draw(self):
         self.clear()
+
+        rect_fondo = arcade.rect.LBWH(0, 0, self.window.width, self.window.height)
+        arcade.draw_texture_rect(self.textura_fondo, rect_fondo)
 
         self.lista_sprites.draw()
         
