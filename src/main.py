@@ -664,7 +664,7 @@ class VistaHistoria(arcade.View):
                     for f in os.listdir("primer capitulo")
                     if f.endswith(".tmx")
                 ]
-            elif (numero_nivel >= 2 and numero_nivel <= 4):
+            elif (numero_nivel >= 2 and numero_nivel <= 5):
                 todos_los_mapas = [
                     os.path.join("cap_de2a4", f)
                     for f in os.listdir("cap_de2a4")
@@ -684,7 +684,7 @@ class VistaHistoria(arcade.View):
         elif numero_nivel == 4:
             self.mapas = todos_los_mapas[4:6]    # Para el Nivel 4
         elif numero_nivel == 5:
-            self.mapas = todos_los_mapas[6:]     # Para el Nivel 5
+            self.mapas = todos_los_mapas[6:9]     # Para el Nivel 5
         else:
             self.mapas = []
 
@@ -770,14 +770,181 @@ class VistaHistoria(arcade.View):
     def on_hide_view(self):
         self.manager.disable()
 
+class VistaHistoriaFinal(arcade.View):
+    def __init__(self):
+        super().__init__()
+
+        self.manager = arcade.gui.UIManager()
+
+        try:
+            todos_los_mapas = [
+                os.path.join("cap_de2a4", f)
+                for f in os.listdir("cap_de2a4")
+                if f.endswith(".tmx")
+            ]
+            todos_los_mapas.sort(key=lambda x: int(os.path.splitext(os.path.basename(x))[0]))
+
+            self.mapas = todos_los_mapas[9:13]     # Mapas de la historia final
+        except:
+            self.mapas = []
+
+        self.indice = 0
+        self.camara = arcade.Camera2D()
+        self.scene = None
+
+        if self.mapas:
+            self.cargar_mapa()
+
+        self.boton_siguiente = arcade.load_texture(os.path.join("assets", "siguiente.png"))
+        self.boton_siguiente = arcade.gui.UITextureButton(
+            texture=self.boton_siguiente,
+            texture_hovered=self.boton_siguiente,
+            texture_pressed=self.boton_siguiente,
+            scale=0.13
+        )
+
+        @self.boton_siguiente.event("on_click")
+        def on_click_siguiente(event):
+            self.indice += 1
+            if self.indice < len(self.mapas):
+                self.cargar_mapa()
+            else:
+                self.window.show_view(Victoria_Fin_Juego())
+
+        # Lo ponemos en la esquina inferior derecha
+        self.anclaje = arcade.gui.UIAnchorLayout()
+        self.anclaje.add(
+            child=self.boton_siguiente,
+            anchor_x="center_x",
+            anchor_y="center_y",
+            align_x=350,
+            align_y=-350
+        )
+        self.manager.add(self.anclaje)
+
+    def cargar_mapa(self):
+        try:
+            tile_map = arcade.load_tilemap(self.mapas[self.indice])
+            self.scene = arcade.Scene.from_tilemap(tile_map)
+            ancho = tile_map.width * tile_map.tile_width
+            alto = tile_map.height * tile_map.tile_height
+            self.camara.position = (ancho / 2, alto / 2)
+            self.camara.zoom = 0.35 
+        except Exception as e:
+            print(f"Error cargando mapa de historia final: {e}")
+            self.scene = None
+
+    def on_show_view(self):
+        self.manager.enable()
+        if not self.mapas:
+            self.window.show_view(Victoria_Fin_Juego())
+
+    def on_draw(self):
+        self.clear()
+        arcade.set_background_color(arcade.color.DARK_BLUE_GRAY)
+
+        cx, cy = self.window.width / 2, self.window.height / 2
+        recuadro_panel = arcade.rect.LBWH(cx - 400, cy - 400, 800, 800)
+        arcade.draw_rect_filled(recuadro_panel, arcade.color.BLACK)
+        arcade.draw_rect_outline(recuadro_panel, arcade.color.WHITE, border_width=4)
+
+        if self.scene:
+            with self.camara.activate():
+                self.scene.draw()
+        
+        self.window.use()
+        self.manager.draw()
+
+    def on_hide_view(self):
+        self.manager.disable()
+
 # Vista final que va a mostrar que se ha completado todo el juego y cerrará el programa cuando se pulse una tecla
 class Victoria_Fin_Juego(arcade.View):
     def __init__(self):
         super().__init__()
-        self.manager = arcade.gui.UIManager()
-    
-    #def on_show_view(self):
 
+        # Variables de control del scroll
+        self.scroll_y = 0
+        self.velocidad_scroll = 0.75
+        self.scroll_maximo = 2500  # Distancia total que recorrerá la pantalla
+        self.tiempo_juego = 0  
+
+        self.lista_corona = arcade.SpriteList()  
+        self.lista_sprites = arcade.SpriteList()  
+
+        self.corona = arcade.Sprite(os.path.join("assets", "corona.png"), scale=1)
+        self.stella = arcade.Sprite(os.path.join("chica.png"), scale=0.9)
+        self.galaxy = arcade.Sprite(os.path.join("chico.png"), scale=0.9)
+
+        self.lista_corona.append(self.corona)
+        self.lista_sprites.append(self.stella)
+        self.lista_sprites.append(self.galaxy)
+
+        musica_final = os.path.join("assets", "musica_niveles", "musica_final.mp3")
+        self.musica_final = arcade.load_sound(musica_final)
+
+    def on_show_view(self):
+        arcade.set_background_color(arcade.color.BLACK)
+        if getattr(self, 'musica_final', None):
+            self.reproductor_final = arcade.play_sound(self.musica_final, volume=self.window.volumen, loop=True)
+
+    def on_update(self, delta_time):
+        self.tiempo_juego += delta_time
+        
+        # Aumentamos el scroll hasta que alcance el plano final
+        if self.scroll_y < self.scroll_maximo:
+            self.scroll_y += self.velocidad_scroll
+
+    def on_draw(self):
+        self.clear()
+
+        cx = self.window.width / 2
+        cy = self.window.height / 2
+
+        # Dibujamos la corona
+        self.corona.center_x = cx
+        self.corona.center_y = cy + self.scroll_y
+        self.lista_corona.draw()
+
+        # Mensaje de felicitación
+        y_felicitacion = cy - 1000 + self.scroll_y
+        arcade.draw_text("¡ENHORABUENA!", cx, y_felicitacion, arcade.color.GOLD, font_size=45, anchor_x="center", font_name="Impact")
+        arcade.draw_text("Habéis superado todos los peligros y habéis completado el juego.", cx, y_felicitacion - 130, arcade.color.WHITE, font_size=28, anchor_x="center")
+
+        # Créditos de los desarrolladores
+        y_creadores = cy - 1600 + self.scroll_y
+        arcade.draw_text("DESARROLLADO POR:", cx, y_creadores, arcade.color.YELLOW_GREEN, font_size=45, anchor_x="center", font_name="Impact")
+        arcade.draw_text("Jefe de proyecto: Daniel Luque Villa", cx, y_creadores - 70, arcade.color.WHITE, font_size=20, anchor_x="center")
+        arcade.draw_text("  Integrantes del equipo: \n      Minia Cortés Zahonero \n      Rodrigo Calvo Ablanque \n      Adrián Fernández García", cx, y_creadores - 140, arcade.color.LIGHT_GRAY, font_size=20, width=400, anchor_x="center", multiline=True)
+
+        # Plano final
+        y_final = cy - 2500 + self.scroll_y
+        # Dibujamos a Stella y Galaxy a los lados
+        if self.stella and self.galaxy:
+            self.stella.center_x = cx - 250
+            self.stella.center_y = y_final - 40
+            
+            self.galaxy.center_x = cx + 250
+            self.galaxy.center_y = y_final - 40
+
+            self.lista_sprites.draw()
+
+        arcade.draw_text("¡GRACIAS POR JUGAR!", cx, y_final + 250, arcade.color.GOLD, font_size=40, anchor_x="center", font_name="Impact")
+
+        # Efecto de parpadeo para salir
+        if self.scroll_y >= self.scroll_maximo:
+            if int(self.tiempo_juego * 2) % 2 == 0:
+                arcade.draw_text("Presiona ENTER para salir del juego", cx, y_final - 320, arcade.color.GRAY, font_size=18, anchor_x="center")
+
+    def on_key_press(self, key, modifiers):
+        # Salimos del juego al pulsar ENTER cuando termine el scroll
+        if key == arcade.key.ENTER and self.scroll_y >= self.scroll_maximo:
+            arcade.exit()
+
+    def on_hide_view(self):
+        # Paramos la música final al salir de la vista
+        if getattr(self, 'reproductor_final', None):
+            arcade.stop_sound(self.reproductor_final)
     
 class VistaFinNivel(arcade.View):
     def __init__(self, nivel, mensaje, color):
@@ -807,20 +974,22 @@ class VistaFinNivel(arcade.View):
         # Asignar funciones a los clics
         @boton_accion.event("on_click")
         def on_click_accion(event):
-            if self.nivel == 10 and self.color == arcade.color.GOLD:
-                # Si hemos ganado el nivel 10, vamos a la pantalla de créditos/final
-                self.window.show_view(Victoria_Fin_Juego())
-            elif self.color == arcade.color.GREEN:
-                # Lógica: Desbloquear siguiente y abrirlo
-                siguiente = self.nivel + 1
-                if siguiente in CLASES_NIVELES:
-                    if not HISTORIA_VISTA[siguiente]:
-                        self.window.show_view(VistaHistoria(siguiente))
-                    else:
-                        self.window.show_view(CLASES_NIVELES[siguiente]())
+            if self.color == arcade.color.GREEN:
+
+                # Si hemos ganado el Nivel 5, vamos a la Historia Final
+                if self.nivel == 5:
+                    self.window.show_view(VistaHistoriaFinal())
                 else:
-                    # Si no hay más niveles, volvemos al mapa
-                    self.window.show_view(Mapa())
+                    # Se desbloquea el siguiente nivel
+                    siguiente = self.nivel + 1
+                    if siguiente in CLASES_NIVELES:
+                        if not HISTORIA_VISTA[siguiente]:
+                            self.window.show_view(VistaHistoria(siguiente))
+                        else:
+                            self.window.show_view(CLASES_NIVELES[siguiente]())
+                    else:
+                        # Si no hay más niveles, volvemos al mapa
+                        self.window.show_view(Mapa())
             else:
                 # Reiniciar el mismo nivel
                 self.window.show_view(CLASES_NIVELES[self.nivel]())
@@ -856,15 +1025,20 @@ class VistaFinNivel(arcade.View):
         # Permitir reiniciar el nivel o pasar al siguiente con la tecla ENTER
         if key == arcade.key.ENTER:
             if self.color == arcade.color.GREEN:
-                # Pasar al siguiente nivel
-                siguiente = self.nivel + 1
-                if siguiente in CLASES_NIVELES:
-                    if not HISTORIA_VISTA[siguiente]:
-                        self.window.show_view(VistaHistoria(siguiente))
-                    else:
-                        self.window.show_view(CLASES_NIVELES[siguiente]())
+
+                # Si hemos ganado el Nivel 5, vamos a la Historia Final
+                if self.nivel == 5:
+                    self.window.show_view(VistaHistoriaFinal())
                 else:
-                    self.window.show_view(Mapa())
+                    # Pasar al siguiente nivel
+                    siguiente = self.nivel + 1
+                    if siguiente in CLASES_NIVELES:
+                        if not HISTORIA_VISTA[siguiente]:
+                            self.window.show_view(VistaHistoria(siguiente))
+                        else:
+                            self.window.show_view(CLASES_NIVELES[siguiente]())
+                    else:
+                        self.window.show_view(Mapa())
             else:
                 # Reiniciar el mismo nivel
                 self.window.show_view(CLASES_NIVELES[self.nivel]())
@@ -885,13 +1059,10 @@ class NivelConseguido(VistaFinNivel):
         # Al conseguir el nivel, actualizamos su estado a conseguido
         ESTADOS_NIVELES[nivel] = "conseguido"
 
-        if nivel == 10:
-            self.window.show_view(Victoria_Fin_Juego()) 
-        else:
-            # Si el siguiente nivel está bloqueado,  lo desbloqueamos
-            siguiente = nivel + 1
-            if siguiente in ESTADOS_NIVELES and ESTADOS_NIVELES[siguiente] == "bloqueado":
-                ESTADOS_NIVELES[siguiente] = "no_conseguido"
+        # Si el siguiente nivel está bloqueado,  lo desbloqueamos
+        siguiente = nivel + 1
+        if siguiente in ESTADOS_NIVELES and ESTADOS_NIVELES[siguiente] == "bloqueado":
+            ESTADOS_NIVELES[siguiente] = "no_conseguido"
 
 # ------------------ CLASE ABSTRACTA ------------------
 class Personaje(arcade.Sprite, ABC):

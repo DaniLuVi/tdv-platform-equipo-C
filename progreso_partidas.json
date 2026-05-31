@@ -1,7 +1,7 @@
 {
     "Partida 1": {
-        "1": "conseguido",
-        "2": "no_conseguido",
+        "1": "no_conseguido",
+        "2": "bloqueado",
         "3": "bloqueado",
         "4": "bloqueado",
         "5": "bloqueado"
@@ -14,24 +14,24 @@
         "5": "bloqueado"
     },
     "Partida 3": {
-        "1": "no_conseguido",
-        "2": "bloqueado",
-        "3": "bloqueado",
-        "4": "bloqueado",
-        "5": "bloqueado"
-    },
-    "Partida 4": {
         "1": "conseguido",
         "2": "conseguido",
         "3": "no_conseguido",
         "4": "bloqueado",
         "5": "bloqueado"
     },
-    "Partida 5": {
+    "Partida 4": {
         "1": "conseguido",
         "2": "conseguido",
         "3": "conseguido",
         "4": "no_conseguido",
         "5": "bloqueado"
+    },
+    "Partida 5": {
+        "1": "conseguido",
+        "2": "conseguido",
+        "3": "conseguido",
+        "4": "conseguido",
+        "5": "no_conseguido"
     }
 }
