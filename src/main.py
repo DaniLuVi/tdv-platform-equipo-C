@@ -247,14 +247,18 @@ class MenuView(arcade.View):
         self.fondo.center_x = self.window.width / 2
         self.fondo.center_y = self.window.height / 2"""
         cx = self.window.width / 2
+
+        inicio_botones = cx - 320
+        final_botones = cx + 170
+
         escala_pj = self.window.height / 1080.0
         self.sprite_1.scale = 1.0 * escala_pj
         self.sprite_2.scale = 1.0 * escala_pj
 
-        self.sprite_1.center_x = cx - 450
-        self.sprite_1.bottom = self.window.height * 0.05
-        self.sprite_2.center_x = cx + 350
-        self.sprite_2.bottom = self.window.height * 0.05
+        self.sprite_1.center_x = inicio_botones - (170 * escala_pj)
+        self.sprite_1.bottom = self.window.height * 0.08
+        self.sprite_2.center_x = final_botones + (170 * escala_pj)
+        self.sprite_2.bottom = self.window.height * 0.08
 
         if not getattr(self.window, 'reproductor_menu', None) or not self.window.reproductor_menu.playing:
             self.window.reproductor_menu = arcade.play_sound(self.musica_inicio, volume=self.window.volumen, loop=True)
