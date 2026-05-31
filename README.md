@@ -1,12 +1,3 @@
-Git no permite mantener directorios vacíos dentro del repositorio. Para una mejor organización del proyecto, los archivos de recursos deberían estar separados por tipo, por ejemplo:
-
-- assets/maps
-- assets/music
-- assets/sound
-- assets/enemies
-
-El archivo README.md (este mismo archivo) debe contener las instrucciones del juego de cara a la entrega del proyecto.
-
 # Instrucciones de juego (Stella & Galaxy)
 
 ## Controles generales
@@ -23,4 +14,6 @@ Para los niveles, los controles son bastante sencillos y fáciles de asociar.
 
 En este juego hay dos personajes que hay que controlar. Cada personaje se mueve con unas teclas especificas, en las que el personaje se puede mover hacia ambos lados o saltar hacia arriba:
   - Stella (el personaje rojo) se controla mediante las teclas: A (izquierda), D (derecha) y W (saltar)
-  - Galaxy (el personaje azul) se controla mediante las teclas: Flecha izquierda (izquierda), Flecha derecha (derecha) y Flecha arriba (saltar) 
+  - Galaxy (el personaje azul) se controla mediante las teclas: Flecha izquierda (izquierda), Flecha derecha (derecha) y Flecha arriba (saltar)
+
+Se deberá de ir completando los niveles uno a uno hasta finalizar el juego.
